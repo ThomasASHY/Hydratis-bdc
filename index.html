@@ -218,7 +218,7 @@
   .ggrow:last-child > span{border-bottom:none}
   .ggrow.max > span{background:rgba(232,163,44,.20);color:#8a5e00;font-weight:800}
   .ggrow.max > span.gg-mg{color:#b5740a}
-  .ggrow.max > span:first-child::before{content:"🎯 ";font-size:.7rem}
+  .ggrow.max > span:first-child::before{content:""}
   .ggrow.hit > span{background:rgba(19,138,82,.16);font-weight:800}
   .ggrow.hit.max > span{background:var(--vert);color:#fff;font-weight:800;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
   .ggrow.hit.max > span.gg-mg{color:#fff}
@@ -415,6 +415,39 @@
 
   .empty-note{text-align:center;color:var(--gris);font-size:.82rem;padding:8px 16px 0}
   footer{text-align:center;font-size:.68rem;color:var(--gris);padding:6px 16px 14px}
+
+  /* VOS INFOS — bulle */
+  .bulle-infos{margin:14px 14px 0;border-radius:16px;background:#fff;box-shadow:var(--ombre);overflow:hidden;border:1.5px solid var(--ligne)}
+  .bulle-header{display:flex;align-items:center;padding:14px 16px;background:var(--eau-clair)}
+  .bulle-header h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;color:var(--eau-fonce);font-weight:800;margin:0;display:flex;align-items:center;gap:8px}
+  .bulle-body{padding:16px}
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .fgrid .field.full{grid-column:1/-1}
+  /* Bulle bleue — magasin */
+  .field-bulle input{border-radius:999px;padding:10px 18px;font-size:.98rem;font-weight:700;background:var(--eau-clair);border-color:var(--eau);border-width:2px}
+  .field-bulle input:focus{border-color:var(--eau-fonce);box-shadow:0 0 0 3px rgba(10,155,212,.2)}
+  /* Champs bleus secondaires — CP, Ville */
+  .field-green input{background:var(--eau-clair);border-color:var(--eau);border-width:1.5px}
+  .field-green input:focus{border-color:var(--eau-fonce);box-shadow:0 0 0 3px rgba(10,155,212,.2)}
+  /* Bulle grise — contact */
+  .field-bulle-blue input{border-radius:999px;padding:10px 18px;font-size:.98rem;font-weight:700;background:var(--gris-clair);border-color:var(--gris);border-width:2px}
+  .field-bulle-blue input:focus{border-color:var(--encre);box-shadow:0 0 0 3px rgba(12,36,52,.12)}
+  /* Champs gris — téléphone, email */
+  .field-blue input{background:var(--gris-clair);border-color:var(--ligne)}
+  .field-blue input:focus{border-color:var(--gris);box-shadow:0 0 0 3px rgba(93,112,128,.15)}
+  .req{color:#d83a3a}
+  .secteur-info{margin-top:10px;font-size:.8rem;padding:9px 12px;border-radius:9px;background:#fbfbf9;border:1px solid var(--ligne);color:var(--gris)}
+  .secteur-info.ok{background:var(--eau-clair);border-color:var(--eau);color:var(--eau-fonce);font-weight:600}
+  .secteur-info.warn{background:#ffe8de;border-color:#ffbfa0;color:#c0390a;font-weight:600}
+  .cp-wrap{position:relative}
+  .cp-drop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--eau);border-radius:10px;box-shadow:0 6px 18px rgba(10,155,212,.14);z-index:200;overflow:hidden;display:none}
+  .cp-drop.open{display:block}
+  .cp-opt{padding:9px 14px;font-size:.87rem;cursor:pointer;border-bottom:1px solid var(--ligne);display:flex;gap:8px;align-items:baseline}
+  .cp-opt:last-child{border-bottom:none}
+  .cp-opt:hover,.cp-opt:focus{background:var(--eau-clair);outline:none}
+  .cp-opt b{color:var(--eau-fonce);font-weight:700;min-width:48px}
+
+
 </style>
 </head>
 <body>
@@ -432,21 +465,15 @@
 
 <!-- PANEL OFFRES -->
 <section class="tab-panel active" id="tab-offres">
-  <div class="offer-visuals">
-    <img
-    class="offer-visu"
-    src="Images/offre-tube.webp"
-     onclick="openImage(this.src)"
-    alt="Offre Tube">
-
-<img
-    class="offer-visu"
-    src="Images\offre-flasque.webp"
-    onclick="openImage(this.src)"
-    alt="Offre Flasque">
-
-     </div>
-
+  <div style="margin:20px auto;max-width:860px;padding:0 14px;">
+    <div style="border-radius:16px;overflow:hidden;box-shadow:var(--ombre);">
+      <picture>
+        <source media="(min-width:640px)" srcset="Images/op-tubes-pc.webp">
+        <img src="Images/tubes-mobile.webp" alt="Offre tubes" style="width:100%;height:auto;display:block;cursor:pointer;" onclick="openImage(this.currentSrc)">
+      </picture>
+    </div>
+  </div>
+  <div style="margin:14px 14px 0">
     <button class="offer-cta" onclick="goTab('commande')">Passer commande →</button>
   </div>
 </section>
@@ -454,32 +481,35 @@
 <!-- PANEL COMMANDE -->
 <section class="tab-panel" id="tab-commande">
 
-<!-- CLIENT -->
-<section class="client">
-  <h2>Votre point de vente</h2>
-  <div class="field"><label>Nom du point de vente / enseigne <span style="color:#d83a3a;font-size:.7rem;font-weight:700">obligatoire</span></label><input type="text" id="c_nom" placeholder="Ex : Sport 2000 Bordeaux" style="border-color:#0a9bd4"></div>
-  <div class="field-row">
-    <div class="field" style="flex:1"><label>Code postal <span style="color:#d83a3a;font-size:.7rem;font-weight:700">obligatoire</span></label><input type="text" id="c_cp" placeholder="33000" inputmode="numeric" maxlength="5" style="border-color:#0a9bd4"></div>
-    <div class="field" style="flex:2"><label>Ville</label><input type="text" id="c_ville" placeholder="Ex : Bordeaux"></div>
+<!-- CLIENT — bulle -->
+<div class="bulle-infos" id="bulleInfos">
+  <div class="bulle-header">
+    <h2>👤 Vos infos</h2>
   </div>
-  <div id="commercial-info" style="display:none;margin:6px 0 4px;padding:8px 12px;background:#e3f5fc;border-radius:9px;font-size:.79rem;color:var(--eau-fonce);font-weight:600;border:1px solid var(--eau);">
-    ✉️ Ce bon sera adressé à <span id="commercial-nom" style="font-weight:800"></span>
+  <div class="bulle-body">
+    <div class="fgrid">
+      <div class="field full field-bulle"><label>Nom du magasin <span class="req">*</span></label><input type="text" id="c_name" class="required" placeholder="ex : runbike 2000"></div>
+      <div class="field field-green"><label>Code postal <span class="req">*</span></label><div class="cp-wrap"><input type="text" id="c_cp" class="required" inputmode="numeric" maxlength="5" placeholder="75000" oninput="cpInput()" autocomplete="off"><div id="cp-drop" class="cp-drop"></div></div></div>
+      <div class="field field-green"><label>Ville</label><input type="text" id="c_ville" placeholder="Ville"></div>
+      <div class="field full field-bulle-blue"><label>Contact / Acheteur <span class="req">*</span></label><input type="text" id="c_contact" class="required" placeholder="Nom de la personne qui passe commande"></div>
+      <div class="field field-blue"><label>Téléphone</label><input type="tel" id="c_phone" placeholder="06 00 00 00 00"></div>
+      <div class="field field-blue"><label>Email <span class="req">*</span></label><input type="email" id="c_email" class="required" placeholder="contact@magasin.fr"></div>
+    </div>
+    <div id="secteur-info" class="secteur-info">Renseignez le code postal pour adresser la commande au bon commercial.</div>
   </div>
-  <div class="field"><label>Contact / acheteur</label><input type="text" id="c_contact" placeholder="Nom de la personne qui commande"></div>
-  <div class="field"><label>Email</label><input type="email" id="c_email" placeholder="votre@email.fr"></div>
-</section>
+</div>
 
 <!-- GRATUIT (remonté en tête) -->
 <div class="op-titre-bdc">
   <span class="otb-tag">☀️ Opération Été 2026 ☀️</span>
 </div>
 <div class="gift-banner" id="giftBanner">
-  <div class="gb-intro-accroche" style="font-size:.9rem;font-weight:800;color:var(--vert);display:flex;align-items:center;gap:7px;">Jusqu'à 45,6 % de marge sur les tubes grâce aux offres volumiques</div>
+  <div class="gb-intro-accroche" style="font-size:.9rem;font-weight:800;color:var(--vert);display:flex;align-items:center;gap:7px;">Jusqu'à 46,3 % de marge sur les tubes grâce aux offres volumiques</div>
   <p class="gb-intro">Votre marge progresse à chaque palier de commande :</p>
   <div class="gift-grid">
     <div class="gg-head">Palier</div><div class="gg-head">Coeff</div><div class="gg-head gg-r">Marge</div>
     <div class="gift-tier ggrow" data-tier="9"><span>9 dont 1 offert</span><span>1,94</span><span class="gg-mg">45,6 %</span></div>
-    <div class="gift-tier ggrow max" data-tier="18"><span>18 dont 2 offerts</span><span>1,94</span><span class="gg-mg">45,6 %</span></div>
+    <div class="gift-tier ggrow max" data-tier="16"><span>16 dont 2 offerts</span><span>1,96</span><span class="gg-mg">46,3 %</span></div>
   </div>
   <div class="gift-current">
     <span>Displays commandés : <span id="gc_count">0</span></span>
@@ -488,12 +518,12 @@
 </div>
 
 <!-- TUBES -->
-<div class="section-title"><span class="pic">🧊</span> Displays de 8 tubes</div>
+<div class="section-title"><span class="pic">🧊</span> DISPLAYS DE 8 TUBES</div>
 <p class="section-sub">PCB display de 8 • livré prérempli</p>
 <div class="prod-list" id="list-tubes"></div>
 
 <!-- FLASQUES -->
-<div class="section-title" style="margin-top:26px"><span class="pic">💧</span> Flasque souple Hydratis</div>
+<div class="section-title" style="margin-top:26px"><span class="pic">💧</span> FLASQUES SOUPLES</div>
 <p class="section-sub"><span style="display:inline-block;background:var(--eau);color:#fff;font-size:.65rem;font-weight:800;border-radius:5px;padding:2px 8px;vertical-align:middle;margin-right:6px;">NOUVEAU</span>PCB de 10 • 500 ml</p>
 <div class="prod-list">
   <div class="prod flasque" id="flasque-card">
@@ -506,13 +536,13 @@
        style="cursor:pointer">
 </div>
         <div class="prod-info">
-          <div class="prod-name">Flasque souple Hydratis</div>
+          <div class="prod-name">Flasques souples</div>
           <div class="prod-ref">FLASQUE_SOUPLE_10</div>
           <div class="prod-ean">PCB de 10 · qté en lots de 10</div>
           <div class="prod-kpi">
-            <span class="kpi"><b>PA</b> 4,78 €<i>HT</i></span>
-            <span class="kpi"><b>PMC</b> 9,99 €<i>TTC</i></span>
-            <span class="kpi marge boosted"><b>Marge</b> <span class="m-boost">42,6 %</span></span>
+            <span class="kpi"><b>PA</b> 5,99 €<i>HT / flasque</i></span>
+            <span class="kpi"><b>PV</b> 12,95 €<i>TTC</i></span>
+            <span class="kpi marge"><b>Marge</b> <span class="marge-val">44,5 %</span></span>
           </div>
         </div>
       </div>
@@ -522,21 +552,31 @@
         <button data-act="plus" id="fl-plus">+</button>
       </div>
     </div>
-    <div class="flasque-total" id="flasque-total" style="display:none">
-      <span class="ft-lbl">Total flasques (× lots de 10)</span>
-      <span class="ft-val" id="fl-total">0,00 €</span>
+    <div class="prod-detail">
+      <div class="detail-grid">
+        <span class="dl">Base HT / flasque</span><span class="dv">9,51 €</span>
+        <span class="dl">Remise 37 %</span><span class="dv">5,99 €</span>
+        <span class="dl">Tarif net HT</span><span class="dv">5,99 €</span>
+        <span class="dl">PMC TTC</span><span class="dv">12,95 €</span>
+        <span class="dl">Marge</span><span class="dv">44,5 %</span>
+        <span class="dl">Coeff</span><span class="dv">2,16</span>
+      </div>
+      <div class="line-total">
+        <span class="lt-lbl">Total HT ligne</span>
+        <span class="lt-val" id="fl-total">0,00 €</span>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- GOURDES -->
-<div class="section-title" style="margin-top:26px"><span class="pic">🥤</span> Gourdes isothermes</div>
+<div class="section-title" style="margin-top:26px"><span class="pic">🥤</span> GOURDES ISOTHERMES</div>
 <p class="section-sub">PCB unitaire • 500 ml</p>
 <div class="prod-list" id="list-gourdes"></div>
 
 
 <!-- PACK 20 -->
-<div class="section-title" style="margin-top:26px"><span class="pic">📦</span> Display de 20 tubes</div>
+<div class="section-title" style="margin-top:26px"><span class="pic">📦</span> DISPLAY DE 20 TUBES</div>
 <p class="section-sub">Display prérempli • assortiment de saveurs</p>
 <div class="prod-list" id="list-pack20"></div>
 
@@ -714,7 +754,7 @@
   <div class="recap-body">
 
     <div class="rcat">
-      <div class="rcat-title">🧊 Displays de 8 tubes</div>
+      <div class="rcat-title">🧊 DISPLAYS DE 8 TUBES</div>
       <div class="rline"><span class="rl-lbl">Nb total de tubes</span><span class="rl-val" id="r_nbtubes">0</span></div>
       <div class="rline"><span class="rl-lbl">Dont gratuit (displays)</span><span class="rl-val" id="r_gratuit">0</span></div>
       <div class="rline"><span class="rl-lbl">Sous-total HT</span><span class="rl-val" id="r_sstotal">0,00 €</span></div>
@@ -723,21 +763,29 @@
     </div>
 
     <div class="rcat">
-      <div class="rcat-title">📦 Display de 20 tubes</div>
+      <div class="rcat-title">📦 DISPLAY DE 20 TUBES</div>
       <div class="rline"><span class="rl-lbl">Nb de displays de 20</span><span class="rl-val" id="r_nbpack20">0</span></div>
       <div class="rcat-total"><span>Total HT display 20</span><span id="r_htpack20">0,00 €</span></div>
     </div>
 
     <div class="rcat">
-      <div class="rcat-title">🥤 Gourdes isothermes</div>
+      <div class="rcat-title">🥤 GOURDES ISOTHERMES</div>
       <div class="rline"><span class="rl-lbl">Nb de gourdes</span><span class="rl-val" id="r_nbgourdes">0</span></div>
       <div class="rcat-total"><span>Total HT gourdes</span><span id="r_htgourdes">0,00 €</span></div>
     </div>
 
     <div class="rcat">
-      <div class="rcat-title">💧 Flasques souples</div>
+      <div class="rcat-title">💧 FLASQUES SOUPLES</div>
       <div class="rline"><span class="rl-lbl">Nb de flasques</span><span class="rl-val" id="r_nbflasques">0</span></div>
       <div class="rcat-total"><span>Total HT flasques</span><span id="r_htflasques">0,00 €</span></div>
+    </div>
+
+    <div class="rcat">
+      <div class="rcat-title">📣 PLV / ILV <span style="font-size:.62rem;font-weight:700;color:var(--vert);background:var(--vert-bg);border-radius:4px;padding:1px 7px;margin-left:5px;">GRATUIT</span></div>
+      <div id="r_plv_list"><div class="rline"><span class="rl-lbl" style="color:var(--gris);font-style:italic;">Aucun matériel sélectionné</span></div></div>
+      <div style="margin-top:9px;padding:8px 11px;background:#fff4e0;border:1px dashed var(--or);border-radius:8px;font-size:.72rem;color:#8a5e00;font-weight:600;line-height:1.4;">
+        ⚠️ Sous réserve de validation par le responsable de secteur
+      </div>
     </div>
 
     <div class="rcat rcat-totaux">
@@ -754,7 +802,7 @@
   </div>
 </div>
 
-<footer>Tarifs 2026 • PA = prix d'achat net net (remise 37 %) • PV = prix conseillé TTC • Document de travail</footer>
+<footer>Tarifs 2026 • PA = prix d'achat net (remise 37 %) • PV = prix conseillé TTC • Document de travail</footer>
 
 <!-- BARRE FIXE -->
 <div class="bottombar">
@@ -813,7 +861,12 @@
     <a class="res-item" href="Ressources/Fiche technique produits Hydratis.pdf" target="_blank" rel="noopener">
       <span class="res-ic">🔬</span>
       <span class="res-tx"><span class="rt-title">Fiches techniques produits</span><span class="rt-sub"></span></span>
-      
+
+    </a>
+
+    <a class="res-item" href="Ressources/BDC Hydratis - Meteo des plages.xlsx" target="_blank" rel="noopener">
+      <span class="res-ic">💰</span>
+      <span class="res-tx"><span class="rt-title">Tarif 2026</span><span class="rt-sub">Télécharger le tarif au format Excel</span></span>
     </a>
   </div>
 
@@ -826,6 +879,7 @@ function goTab(id){
   document.querySelector('.bottombar').style.display = (id==='commande')?'flex':'none';
   window.scrollTo({top:0,behavior:'instant'});
 }
+
 document.querySelectorAll('.tabbar button').forEach(b=>{
   b.addEventListener('click',()=>goTab(b.dataset.tab));
 });
@@ -867,6 +921,7 @@ const COMMERCIAUX = {
   "86":"stephane.l@magnitude.fr",
 
   // Séverine
+  "75":"severine.v@magnitude.fr",
   "02":"severine.v@magnitude.fr",
   "08":"severine.v@magnitude.fr",
   "10":"severine.v@magnitude.fr",
@@ -958,31 +1013,31 @@ function deptFromCP(cp){cp=(cp||'').trim().toUpperCase();if(/^(2A|2B)/.test(cp))
 
 // Données produits : tubes (display de 8) — base 9 € / display, PMC 9,90 €
 const TUBES = [
-  ["PÊCHE","TU_PEC_8","3760304100024","#ff9d6e"],
-  ["FRUITS DES BOIS","TU_FDB_8","3760304100000","#9c4bb0"],
-  ["CITRON FLEURS DE SUREAU","TU_CIT_8","3760304100017","#e8d44a"],
-  ["MANGUE PASSION","TU_20_MANGPA_8","3760304103452","#f5a623"],
-  ["PASTÈQUE","TU_PASTQ_8","3760304101021","#ef5d6b"],
-  ["NEUTRE","TU_NEUT_8","3760304101120","#7fb4cc"],
-  ["MENTHE","TU_20_MENTHE_8","3760304101670","#4cb89a"],
-  ["ANANAS","TU_20_ANANAS_8","3760304101465","#f3c531"],
-  ["KIWI","TU_20_KIWI_8","3760304101625","#86b93f"],
-  ["COCO","TU_COCO_8","3760304100819","#cdbfa8"],
-  ["CITRONNELLE GINGEMBRE","TU_GIN_8","3760304100291","#d4b94e"],
-  ["MIEL CITRON","TU_MIEL20_8","3760304100949","#e0a93f"],
-  ["POMME CANNELLE","TU_POMCAN_8","3760304101168","#c8694a"],
+  ["Pêche","TU_PEC_8","3760304100024","#ff9d6e"],
+  ["Fruits des bois","TU_FDB_8","3760304100000","#9c4bb0"],
+  ["Citron fleurs de sureau","TU_CIT_8","3760304100017","#e8d44a"],
+  ["Mangue passion","TU_20_MANGPA_8","3760304103452","#f5a623"],
+  ["Pastèque","TU_PASTQ_8","3760304101021","#ef5d6b"],
+  ["Neutre","TU_NEUT_8","3760304101120","#7fb4cc"],
+  ["Menthe","TU_20_MENTHE_8","3760304101670","#4cb89a"],
+  ["Ananas","TU_20_ANANAS_8","3760304101465","#f3c531"],
+  ["Kiwi","TU_20_KIWI_8","3760304101625","#86b93f"],
+  ["Coco","TU_COCO_8","3760304100819","#cdbfa8"],
+  ["Citronnelle gingembre","TU_GIN_8","3760304100291","#d4b94e"],
+  ["Miel citron","TU_MIEL20_8","3760304100949","#e0a93f"],
+  ["Pomme cannelle","TU_POMCAN_8","3760304101168","#c8694a"],
 ];
-const PACK20 = ["DISPLAY DE 20 TUBES LIVRÉ PRÉREMPLI","PACK20_TU_MIX","3760304101229","#0a9bd4"];
+const PACK20 = ["Display de 20 tubes livré prérempli","PACK20_TU_MIX","3760304101229","#0a9bd4"];
 
 const GOURDES = [
-  ["GOURDE ISOTHERME BLEUE","GOU_BL500","3760304100468","#2f7fd1"],
-  ["GOURDE ISOTHERME VERTE","GOU_VR500","3760304101274","#3aa35f"],
-  ["GOURDE ISOTHERME NOIRE","GOU_NR500","3760304100178","#2a2a2a"],
-  ["GOURDE ISOTHERME JAUNE","GOU_JN500","3760304100499","#e8c130"],
-  ["GOURDE ISOTHERME ROUGE","GOU_RG500","3760304100475","#d83a3a"],
-  ["GOURDE ISOTHERME NOIR CHROMÉ","GOU_NRMET500","3760304101755","#4a4a52"],
-  ["GOURDE ISOTHERME ROSE PASTEL","GOU_ROSE500","3760304101748","#eaa0c0"],
-  ["GOURDE ISOTHERME BLANCHE","GOU_BC500","3760304100482","#d8dde0"],
+  ["Gourde isotherme bleue","GOU_BL500","3760304100468","#2f7fd1"],
+  ["Gourde isotherme verte","GOU_VR500","3760304101274","#3aa35f"],
+  ["Gourde isotherme noire","GOU_NR500","3760304100178","#2a2a2a"],
+  ["Gourde isotherme jaune","GOU_JN500","3760304100499","#e8c130"],
+  ["Gourde isotherme rouge","GOU_RG500","3760304100475","#d83a3a"],
+  ["Gourde isotherme noir chromé","GOU_NRMET500","3760304101755","#4a4a52"],
+  ["Gourde isotherme rose pastel","GOU_ROSE500","3760304101748","#eaa0c0"],
+  ["Gourde isotherme blanche","GOU_BC500","3760304100482","#d8dde0"],
 ];
 
 
@@ -1009,7 +1064,7 @@ function makeProd(item, type){
   const unit = ref==='PACK20_TU_MIX'?20:(type==='gourde'?1:8);
   const nn = netNet(base);
   const img = `Images/${ref}.webp`;
-  const short = name.replace(/GOURDE ISOTHERME /,'').split(' ').slice(0,2).join(' ');
+  const short = name.replace(/Gourde isotherme /,'').split(' ').slice(0,2).join(' ');
   const thumb =
   `<img src="${img}" alt="${name}"
     onclick="openImage(this.src)"
@@ -1081,7 +1136,7 @@ const lp=document.getElementById('list-pack20');
 lp.appendChild(makeProd(PACK20,'tube'));
 
 function freeDisplays(n){
-  return n >= 18 ? 2 :
+  return n >= 16 ? 2 :
          n >= 9 ? 1 : 0;
 }
 
@@ -1192,25 +1247,55 @@ function recompute(){
 }
 function set(id,v){document.getElementById(id).textContent=v}
 
-function updateCommercialInfo(){
-  const cp = document.getElementById('c_cp').value.trim();
-  const dept = deptFromCP(cp);
-  const email = COMMERCIAUX[dept];
-  const info = document.getElementById('commercial-info');
-  if(email && cp.length >= 2){
-    document.getElementById('commercial-nom').textContent = NOMS[email] || email;
-    info.style.display = 'block';
-  } else {
-    info.style.display = 'none';
-  }
+function commercialFor(cp){return COMMERCIAUX[deptFromCP(cp)]||null;}
+function routeSecteur(){
+  const cp=document.getElementById('c_cp').value;
+  const info=document.getElementById('secteur-info');
+  if(cp.length<2){info.className='secteur-info';info.textContent='Renseignez le code postal pour adresser la commande au bon commercial.';return;}
+  const email=commercialFor(cp);
+  if(email){info.className='secteur-info ok';info.textContent='Commande adressée à '+NOMS[email]+' ('+email+'), avec copie au service commandes.';}
+  else{info.className='secteur-info warn';info.textContent='Département non reconnu — commande envoyée au service commandes uniquement.';}
 }
-document.getElementById('c_cp').addEventListener('input', updateCommercialInfo);
+var _cpTimer;
+function cpInput(){
+  routeSecteur();
+  var val=document.getElementById('c_cp').value.trim();
+  var drop=document.getElementById('cp-drop');
+  clearTimeout(_cpTimer);
+  if(val.length<2){drop.innerHTML='';drop.classList.remove('open');return;}
+  _cpTimer=setTimeout(function(){
+    fetch('https://api-adresse.data.gouv.fr/search/?q='+encodeURIComponent(val)+'&type=municipality&limit=10&autocomplete=1')
+      .then(function(r){return r.json();})
+      .then(function(data){
+        var feats=data&&data.features;
+        if(!feats||!feats.length){drop.innerHTML='';drop.classList.remove('open');return;}
+        drop.innerHTML=feats.map(function(f){
+          var cp=f.properties.postcode||'';
+          var ville=(f.properties.name||f.properties.city||'').replace(/'/g,'&#39;');
+          var cpSafe=cp.replace(/'/g,'&#39;');
+          return '<div class="cp-opt" tabindex="0" onmousedown="selectCP(\''+cpSafe+'\',\''+ville+'\')">'
+            +'<b>'+cp+'</b><span>'+f.properties.name+'</span></div>';
+        }).join('');
+        drop.classList.add('open');
+      })
+      .catch(function(){drop.innerHTML='';drop.classList.remove('open');});
+  },280);
+}
+function selectCP(cp,ville){
+  document.getElementById('c_cp').value=cp;
+  document.getElementById('c_ville').value=ville;
+  document.getElementById('cp-drop').classList.remove('open');
+  routeSecteur();
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.cp-wrap'))document.getElementById('cp-drop').classList.remove('open');
+});
 
 document.getElementById('bb_btn').addEventListener('click',function(){
   if(this.classList.contains('disabled'))return;
   const o = window.ORDER;
   const v = id => document.getElementById(id).value.trim();
-  const nom = v('c_nom');
+  const nom = v('c_name');
   const ville = v('c_ville');
   const cp = v('c_cp');
   if(!nom){
@@ -1249,21 +1334,25 @@ CLIENT
   Contact : ${v('c_contact')||'-'}
   Email : ${v('c_email')||'-'}
 
+────────────────────────────────
 💧 DISPLAYS 8 TUBES 💧
-${o.free > 0 ? `🆓 ${o.free} DISPLAY(S) OFFERT(S) 🆓` : ''}
-${lignes.length ? lignes.join('\n') : '  (aucun)'}
+${[o.free > 0 ? `🆓 ${o.free} DISPLAY(S) OFFERT(S) 🆓` : null, lignes.length ? lignes.join('\n') : '  (aucun)'].filter(Boolean).join('\n')}
 Nb total de tubes : ${o.nbTubes}
 ${q20line>0?`
+────────────────────────────────
 📦DISPLAY 20 TUBES PRÉREMPLI📦
-  • Display de 20 tubes : ${q20line}
+  • DISPLAY DE 20 TUBES : ${q20line}
 `:''}
+────────────────────────────────
 🥤GOURDES🥤
 ${lignesG.length?lignesG.join('\n'):'  (aucune)'}
   Nb de gourdes : ${o.nbGourdes}
 ${o.flNbUnites>0?`
+────────────────────────────────
 🧃FLASQUES (offre PCB de 10)🧃
-  • Flasque souple Hydratis : ${o.flLots} lot(s) de 10 = ${o.flNbUnites} unités
+  • Flasques souples : ${o.flLots} lot(s) de 10 = ${o.flNbUnites} unités
 `:''}
+────────────────────────────────
 📢MATÉRIELS PLV📢
 ${PLV_REFS.map(r=>{ const q=getPlvQty(r); return q>0?`  • ${PLV_NOMS[r]} : ${q}`:null; }).filter(Boolean).join('\n')||'  (aucun)'}
 
@@ -1309,6 +1398,15 @@ const PLV_NOMS = {
   'PLV_MACA_PEC':'Sticker macaron vitrine'
 };
 function getPlvQty(ref){ return parseInt(document.querySelector(`.plv-qty[data-plv="${ref}"]`)?.value||0)||0; }
+function updatePlvRecap(){
+  const wrap=document.getElementById('r_plv_list');
+  if(!wrap)return;
+  const lines=PLV_REFS.map(r=>{
+    const q=getPlvQty(r);
+    return q>0?`<div class="rline"><span class="rl-lbl">${PLV_NOMS[r]}</span><span class="rl-val">${q}</span></div>`:null;
+  }).filter(Boolean);
+  wrap.innerHTML=lines.length?lines.join(''):'<div class="rline"><span class="rl-lbl" style="color:var(--gris);font-style:italic;">Aucun matériel sélectionné</span></div>';
+}
 document.querySelectorAll('[data-plv]').forEach(el=>{
   el.addEventListener(el.tagName==='INPUT'?'input':'click', function(){
     const ref=this.dataset.plv;
@@ -1318,11 +1416,12 @@ document.querySelectorAll('[data-plv]').forEach(el=>{
       const v=parseInt(inp.value||0)||0;
       inp.value = Math.max(0, act==='plus'?v+1:v-1);
     }
+    updatePlvRecap();
   });
 });
 
 // ===== FLASQUE =====
-const FLASQUE_PA = 4.78;   // PA HT par flasque
+const FLASQUE_PA = 5.99;   // PA HT par flasque
 let flasqueLots = 0; // nombre de lots de 10
 
 function flasqueUnlocked(){
@@ -1333,13 +1432,9 @@ function flasqueTotalHT(){ return flasqueLots*10*FLASQUE_PA; }
 
 function updateFlasque(){
   const card = document.getElementById('flasque-card');
-  const totalEl = document.getElementById('flasque-total');
   card.classList.toggle('active', flasqueLots>0);
   if(flasqueLots>0){
-    totalEl.style.display = 'flex';
     document.getElementById('fl-total').textContent = fmt(flasqueTotalHT());
-  } else {
-    totalEl.style.display = 'none';
   }
 }
 
