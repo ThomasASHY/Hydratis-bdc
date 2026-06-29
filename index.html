@@ -162,10 +162,27 @@
   .qty input::-webkit-outer-spin-button,.qty input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 
   .prod-detail{
-    margin-top:11px;padding-top:11px;border-top:1px dashed var(--ligne);
+    margin-top:0;padding-top:10px;border-top:none;
     display:none;font-size:.78rem;
   }
-  .prod.active .prod-detail{display:block}
+  .prod.open .prod-detail{display:block}
+  /* total toujours visible quand actif */
+  .prod > .line-total{display:none}
+  .prod.active > .line-total{display:flex;margin-top:10px;padding-top:0;border-top:none}
+  /* barre toggle */
+  .prod-toggle-bar{
+    display:none;margin-top:8px;padding:7px 12px;
+    background:var(--gris-clair);border-radius:8px;
+    font-size:.74rem;font-weight:700;color:var(--gris);
+    cursor:pointer;user-select:none;
+    align-items:center;justify-content:center;gap:6px;
+  }
+  .prod.active .prod-toggle-bar{display:flex}
+  .prod-toggle-bar .tb-arrow{display:inline-block;transition:transform .25s;font-size:.8rem}
+  .prod.open .prod-toggle-bar .tb-arrow{transform:rotate(180deg)}
+  .prod-toggle-bar:active{background:var(--eau-clair);color:var(--eau-fonce)}
+  .tier-pa-lbl{color:var(--vert);font-weight:700}
+  .tier-pa-val{color:var(--vert);font-weight:800}
   .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px}
   .detail-grid .dl{color:var(--gris)}
   .detail-grid .dv{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
@@ -552,6 +569,11 @@
         <button data-act="plus" id="fl-plus">+</button>
       </div>
     </div>
+    <div class="line-total">
+      <span class="lt-lbl">Total HT ligne</span>
+      <span class="lt-val" id="fl-total">0,00 €</span>
+    </div>
+    <div class="prod-toggle-bar"><span class="tb-arrow">▾</span> Détails prix</div>
     <div class="prod-detail">
       <div class="detail-grid">
         <span class="dl">Base HT / flasque</span><span class="dv">9,51 €</span>
@@ -560,10 +582,6 @@
         <span class="dl">PMC TTC</span><span class="dv">12,95 €</span>
         <span class="dl">Marge</span><span class="dv">44,5 %</span>
         <span class="dl">Coeff</span><span class="dv">2,16</span>
-      </div>
-      <div class="line-total">
-        <span class="lt-lbl">Total HT ligne</span>
-        <span class="lt-val" id="fl-total">0,00 €</span>
       </div>
     </div>
   </div>
@@ -756,9 +774,7 @@
     <div class="rcat">
       <div class="rcat-title">🧊 DISPLAYS DE 8 TUBES</div>
       <div class="rline"><span class="rl-lbl">Nb total de tubes</span><span class="rl-val" id="r_nbtubes">0</span></div>
-      <div class="rline"><span class="rl-lbl">Dont gratuit (displays)</span><span class="rl-val" id="r_gratuit">0</span></div>
-      <div class="rline"><span class="rl-lbl">Sous-total HT</span><span class="rl-val" id="r_sstotal">0,00 €</span></div>
-      <div class="rline gift"><span class="rl-lbl">Remise display gratuit</span><span class="rl-val" id="r_remise">0,00 €</span></div>
+      <div class="rline gift"><span class="rl-lbl">Dont displays offerts</span><span class="rl-val" id="r_gratuit">—</span></div>
       <div class="rcat-total"><span>Total HT tubes</span><span id="r_httubes">0,00 €</span></div>
     </div>
 
@@ -1071,7 +1087,7 @@ function makeProd(item, type){
     style="cursor:pointer"
     onerror="this.parentNode.innerHTML='<span class=&quot;ph&quot;>${short}</span>';this.parentNode.style.background='${color}'">`;
   const el=document.createElement('div');
-  el.className='prod';el.dataset.ref=ref;
+  el.className='prod';el.dataset.ref=ref;el.dataset.nn=nn;el.dataset.pmc=pmc;
   el.innerHTML=`
     <div class="prod-top">
       <div class="prod-main">
@@ -1093,18 +1109,20 @@ function makeProd(item, type){
         <button data-act="plus">+</button>
       </div>
     </div>
+    <div class="line-total">
+      <span class="lt-lbl">Total HT ligne</span>
+      <span class="lt-val" data-linetotal="${ref}">${fmt(0)}</span>
+    </div>
+    <div class="prod-toggle-bar"><span class="tb-arrow">▾</span> Détails prix</div>
     <div class="prod-detail">
       <div class="detail-grid">
         <span class="dl">Base HT ${type==='gourde'?'/ unité':(ref==='PACK20_TU_MIX'?'/ display':'/ tube')}</span><span class="dv">${fmt(base)}</span>
         <span class="dl">Remise 37 %</span><span class="dv">${fmt(base-base*REMISE)}</span>
         <span class="dl">Tarif net HT</span><span class="dv">${fmt(nn)}</span>
+        <span class="dl tier-pa-lbl" style="display:none">PA effectif / ${ref==='PACK20_TU_MIX'?'display':'tube'} (palier)</span><span class="dv tier-pa-val" style="display:none"></span>
         <span class="dl">PMC TTC</span><span class="dv">${fmt(pmc)}</span>
-        <span class="dl">Marge</span><span class="dv">${fmtPct(marge(nn,pmc))}</span>
-        <span class="dl">Coeff</span><span class="dv">${coeff(nn,pmc).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
-      </div>
-      <div class="line-total">
-        <span class="lt-lbl">Total HT ligne</span>
-        <span class="lt-val" data-linetotal="${ref}">${fmt(0)}</span>
+        <span class="dl">Marge</span><span class="dv tier-marge-val">${fmtPct(marge(nn,pmc))}</span>
+        <span class="dl">Coeff</span><span class="dv tier-coeff-val">${coeff(nn,pmc).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
       </div>
     </div>`;
   el.querySelectorAll('.qty button').forEach(b=>{
@@ -1118,12 +1136,16 @@ function makeProd(item, type){
   el.querySelector('input').addEventListener('input',e=>{
     let v=Math.max(0,parseInt(e.target.value)||0);updateQty(ref,v,el);
   });
+  el.querySelector('.prod-toggle-bar').addEventListener('click',()=>{
+    el.classList.toggle('open');
+  });
   return el;
 }
 
 function updateQty(ref,v,el){
   state[ref]=v;
   el.classList.toggle('active',v>0);
+  if(v===0) el.classList.remove('open');
   recompute();
 }
 
@@ -1162,11 +1184,20 @@ function recompute(){
   // total displays pour calcul gratuit (displays 8 + pack 20)
   const totalDisplaysCmd = nbDisplays8 + q20;
   const free = freeDisplays(totalDisplaysCmd);
-  const remiseGratuit = free * nnTube * 8;
 
-  // sous-total et total tubes de 8 (le pack 20 a sa propre ligne)
+  // remise gratuit au prix net-net
+  const remiseGratuit = free * 8 * nnTube;
   const sousTotalHT = sousTotalTubes;
-  const totalHTtubes = sousTotalHT - remiseGratuit; // tubes de 8 seulement
+  const totalHTtubes = sousTotalHT - remiseGratuit;
+
+  // PA effectif / tube commandé = ce qu'on paie réellement / tubes commandés
+  const paEffGlobal = nbDisplays8>0 ? totalHTtubes/(nbDisplays8*8) : nnTube;
+
+  // MAJ totaux de ligne avec PA effectif
+  TUBES.forEach(([n,ref])=>{
+    const q=state[ref]||0;
+    document.querySelector(`[data-linetotal="${ref}"]`).textContent=fmt(q*8*paEffGlobal);
+  });
 
   // gourdes
   let nbGourdes=0, totalGourdes=0;
@@ -1188,9 +1219,7 @@ function recompute(){
 
   // MAJ récap
   set('r_nbtubes',nbTubes);
-  set('r_gratuit',free);
-  set('r_sstotal',fmt(sousTotalHT));
-  set('r_remise', remiseGratuit>0?'– '+fmt(remiseGratuit):fmt(0));
+  set('r_gratuit',free>0?free+' display'+(free>1?'s':''):'—');
   set('r_httubes',fmt(totalHTtubes));
   set('r_nbpack20',q20);
   set('r_htpack20',fmt(p20Total));
@@ -1213,7 +1242,6 @@ function recompute(){
   });
 
   // marge dynamique sur les tuiles produit (tubes) selon le palier de gratuit atteint
-  const ratioLivre = totalDisplaysCmd>0 ? (totalDisplaysCmd+free)/totalDisplaysCmd : 1;
   document.querySelectorAll('.kpi.marge').forEach(el=>{
     if(!el.dataset.margeBase) return; // ignore la flasque (marge fixe)
     const mBase = parseFloat(el.dataset.margeBase);
@@ -1225,13 +1253,38 @@ function recompute(){
     }
     // marge réelle = 1 - PA_moyen/PV_HT ; PA_moyen = PA_base / ratioLivre
     // PA_base/PV_HT = 1 - mBase  => PA_moyen/PV_HT = (1-mBase)/ratioLivre
-    const mReelle = 1 - (1-mBase)/ratioLivre;
-    if(free>0){
-      valEl.innerHTML = `<span class="m-base">${fmtPct(mBase)}</span> <span class="m-arrow">→</span> <span class="m-boost">${fmtPct(mReelle)}</span>`;
+    const isTube8 = el.dataset.margeRef !== 'PACK20_TU_MIX';
+    const factor = (free>0 && nbDisplays8>0 && isTube8) ? (nbDisplays8-free)/nbDisplays8 : 1;
+    const mReelle = 1 - (1-mBase)*factor;
+    if(factor<1){
+      valEl.textContent = fmtPct(mReelle);
       el.classList.add('boosted');
     } else {
       valEl.textContent = fmtPct(mBase);
       el.classList.remove('boosted');
+    }
+  });
+
+  // PA effectif dans le détail selon palier (tube-8 uniquement)
+  document.querySelectorAll('.prod[data-nn]').forEach(card=>{
+    const ctype=card.querySelector('[data-type]')?.dataset.type;
+    if(ctype==='gourde') return;
+    if(card.dataset.ref==='PACK20_TU_MIX') return;
+    const cnn=parseFloat(card.dataset.nn), cpmc=parseFloat(card.dataset.pmc);
+    const paLbl=card.querySelector('.tier-pa-lbl');
+    const paVal=card.querySelector('.tier-pa-val');
+    const margeEl=card.querySelector('.tier-marge-val');
+    const coeffEl=card.querySelector('.tier-coeff-val');
+    if(!paLbl) return;
+    if(free>0 && nbDisplays8>0){
+      paLbl.style.display=''; paVal.style.display='';
+      paVal.textContent=fmt(paEffGlobal);
+      margeEl.textContent=fmtPct(marge(paEffGlobal,cpmc));
+      coeffEl.textContent=coeff(paEffGlobal,cpmc).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    } else {
+      paLbl.style.display='none'; paVal.style.display='none';
+      margeEl.textContent=fmtPct(marge(cnn,cpmc));
+      coeffEl.textContent=coeff(cnn,cpmc).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
     }
   });
 
@@ -1240,7 +1293,7 @@ function recompute(){
   if(ttc>0){btn.classList.remove('disabled')}else{btn.classList.add('disabled')}
 
   // état courant pour le mail
-  window.ORDER = {nbTubes,free,sousTotalHT,remiseGratuit,totalHTtubes,q20,p20Total,nbGourdes,totalGourdes,totalHT,tva55,tva20,ttc,totalDisplaysCmd,flLots,flNbUnites,flTotalHT};
+  window.ORDER = {nbTubes,free,sousTotalHT,totalHTtubes,q20,p20Total,nbGourdes,totalGourdes,totalHT,tva55,tva20,ttc,totalDisplaysCmd,flLots,flNbUnites,flTotalHT};
 
   // flasque (après ORDER car dépend de totalDisplaysCmd)
   if(typeof updateFlasque==='function') updateFlasque();
@@ -1357,9 +1410,7 @@ ${o.flNbUnites>0?`
 ${PLV_REFS.map(r=>{ const q=getPlvQty(r); return q>0?`  • ${PLV_NOMS[r]} : ${q}`:null; }).filter(Boolean).join('\n')||'  (aucun)'}
 
 TOTAUX
-  Sous-total HT tubes : ${fmt(o.sousTotalHT)}
-  Remise display gratuit : -${fmt(o.remiseGratuit)}
-  Total HT tubes : ${fmt(o.totalHTtubes)}${o.q20>0?`
+  Total HT tubes : ${fmt(o.totalHTtubes)}${o.free>0?` (dont ${o.free} display${o.free>1?'s':''} offert${o.free>1?'s':''})`:''}${o.q20>0?`
   Total HT display 20 : ${fmt(o.p20Total)}`:''}
   Total HT gourdes : ${fmt(o.totalGourdes)}${o.flNbUnites>0?`
   Total HT flasques : ${fmt(o.flTotalHT)}`:''}
@@ -1433,6 +1484,7 @@ function flasqueTotalHT(){ return flasqueLots*10*FLASQUE_PA; }
 function updateFlasque(){
   const card = document.getElementById('flasque-card');
   card.classList.toggle('active', flasqueLots>0);
+  if(flasqueLots===0) card.classList.remove('open');
   if(flasqueLots>0){
     document.getElementById('fl-total').textContent = fmt(flasqueTotalHT());
   }
@@ -1448,6 +1500,9 @@ function updateFlasque(){
   });
   input.addEventListener('input',e=>{
     flasqueLots = Math.max(0, parseInt(e.target.value)||0); recompute();
+  });
+  document.getElementById('flasque-card').querySelector('.prod-toggle-bar').addEventListener('click',function(){
+    document.getElementById('flasque-card').classList.toggle('open');
   });
 })();
 
