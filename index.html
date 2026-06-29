@@ -452,6 +452,10 @@
   /* Champs gris — téléphone, email */
   .field-blue input{background:var(--gris-clair);border-color:var(--ligne)}
   .field-blue input:focus{border-color:var(--gris);box-shadow:0 0 0 3px rgba(93,112,128,.15)}
+  .field-notes{margin-top:10px}
+  .field-notes label{display:block;font-size:.72rem;color:var(--gris);margin-bottom:4px;font-weight:600}
+  .field-notes textarea{width:100%;border:1.5px solid #ccc;border-radius:14px;padding:10px 14px;font-size:.88rem;font-family:inherit;background:#F2F2F0;color:var(--encre-dk);resize:none;min-height:66px;box-sizing:border-box}
+  .field-notes textarea:focus{outline:none;border-color:#aaa;box-shadow:0 0 0 3px rgba(120,120,120,.15)}
   .req{color:#d83a3a}
   .secteur-info{margin-top:10px;font-size:.8rem;padding:9px 12px;border-radius:9px;background:#fbfbf9;border:1px solid var(--ligne);color:var(--gris)}
   .secteur-info.ok{background:var(--eau-clair);border-color:var(--eau);color:var(--eau-fonce);font-weight:600}
@@ -511,6 +515,10 @@
       <div class="field full field-bulle-blue"><label>Contact / Acheteur <span class="req">*</span></label><input type="text" id="c_contact" class="required" placeholder="Nom de la personne qui passe commande"></div>
       <div class="field field-blue"><label>Téléphone</label><input type="tel" id="c_phone" placeholder="06 00 00 00 00"></div>
       <div class="field field-blue"><label>Email <span class="req">*</span></label><input type="email" id="c_email" class="required" placeholder="contact@magasin.fr"></div>
+    </div>
+    <div class="field-notes">
+      <label>Notes</label>
+      <textarea id="c_notes" placeholder="Commentaires / infos / n° de commande"></textarea>
     </div>
     <div id="secteur-info" class="secteur-info">Renseignez le code postal pour adresser la commande au bon commercial.</div>
   </div>
@@ -773,7 +781,7 @@
 
     <div class="rcat">
       <div class="rcat-title">🧊 DISPLAYS DE 8 TUBES</div>
-      <div class="rline"><span class="rl-lbl">Nb total de tubes</span><span class="rl-val" id="r_nbtubes">0</span></div>
+      <div class="rline"><span class="rl-lbl">Nb de displays</span><span class="rl-val" id="r_nbtubes">0</span></div>
       <div class="rline gift"><span class="rl-lbl">Dont displays offerts</span><span class="rl-val" id="r_gratuit">—</span></div>
       <div class="rcat-total"><span>Total HT tubes</span><span id="r_httubes">0,00 €</span></div>
     </div>
@@ -1218,8 +1226,8 @@ function recompute(){
   const ttc = totalHT + tva55 + tva20;
 
   // MAJ récap
-  set('r_nbtubes',nbTubes);
-  set('r_gratuit',free>0?free+' display'+(free>1?'s':''):'—');
+  set('r_nbtubes',nbDisplays8>0?nbDisplays8+' display'+(nbDisplays8>1?'s':'')+' ('+nbTubes+' tubes)':'0');
+  set('r_gratuit',free>0?free+' display'+(free>1?'s':'')+' ('+(free*8)+' tubes)':'—');
   set('r_httubes',fmt(totalHTtubes));
   set('r_nbpack20',q20);
   set('r_htpack20',fmt(p20Total));
