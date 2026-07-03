@@ -1409,7 +1409,7 @@ CLIENT
   Code postal : ${cp||'-'}
   Contact : ${v('c_contact')||'-'}
   Email : ${v('c_email')||'-'}
-
+${v('c_notes')?`  Notes : ${v('c_notes')}\n`:''}
 ────────────────────────────────
 💧 DISPLAYS 8 TUBES 💧
 ${[o.free > 0 ? `🆓 ${o.free} DISPLAY(S) OFFERT(S) 🆓` : null, lignes.length ? lignes.join('\n') : '  (aucun)'].filter(Boolean).join('\n')}
