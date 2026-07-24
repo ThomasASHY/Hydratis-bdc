@@ -463,6 +463,14 @@
   .field-notes textarea{width:100%;border:1.5px solid #ccc;border-radius:14px;padding:10px 14px;font-size:.88rem;font-family:inherit;background:#F2F2F0;color:var(--encre-dk);resize:none;min-height:66px;box-sizing:border-box}
   .field-notes textarea:focus{outline:none;border-color:#aaa;box-shadow:0 0 0 3px rgba(120,120,120,.15)}
   .req{color:#d83a3a}
+  .info-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--encre);color:#fff;font-size:.68rem;font-weight:700;font-style:italic;font-family:Georgia,serif;cursor:pointer;margin-left:5px;vertical-align:middle;line-height:1;user-select:none}
+  .info-icon:hover{background:var(--eau-fonce)}
+  .bt49-modal{display:none;position:fixed;inset:0;background:rgba(12,36,52,.55);z-index:210;align-items:center;justify-content:center;padding:20px}
+  .bt49-modal.open{display:flex}
+  .bt49-card{background:#fff;border-radius:16px;max-width:560px;width:100%;padding:0;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.3);overflow:hidden}
+  .bt49-card img{display:block;width:100%;height:auto}
+  .bt49-close{position:absolute;top:10px;right:10px;font-size:1.5rem;cursor:pointer;color:#fff;line-height:1;background:rgba(12,36,52,.6);border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center}
+  .bt49-close:hover{background:rgba(12,36,52,.85)}
   .secteur-info{margin-top:10px;font-size:.8rem;padding:9px 12px;border-radius:9px;background:#fbfbf9;border:1px solid var(--ligne);color:var(--gris)}
   .secteur-info.ok{background:var(--eau-clair);border-color:var(--eau);color:var(--eau-fonce);font-weight:600}
   .secteur-info.warn{background:#ffe8de;border-color:#ffbfa0;color:#c0390a;font-weight:600}
@@ -518,6 +526,7 @@
       <div class="field full field-bulle"><label>Nom du magasin <span class="req">*</span></label><input type="text" id="c_name" class="required" placeholder="ex : runbike 2000"></div>
       <div class="field field-green"><label>Code postal <span class="req">*</span></label><div class="cp-wrap"><input type="text" id="c_cp" class="required" inputmode="numeric" maxlength="5" placeholder="75000" oninput="cpInput()" autocomplete="off"><div id="cp-drop" class="cp-drop"></div></div></div>
       <div class="field field-green"><label>Ville</label><input type="text" id="c_ville" placeholder="Ville"></div>
+      <div class="field full field-green"><label>Code BT-49 <span class="info-icon" onclick="openBt49Info()" role="button" tabindex="0" aria-label="Qu'est-ce que le code BT-49 ?">i</span></label><input type="text" id="c_bt49" placeholder="Identifiant d'adressage de facture électronique" autocomplete="off"></div>
       <div class="field full field-bulle-blue"><label>Contact / Acheteur <span class="req">*</span></label><input type="text" id="c_contact" class="required" placeholder="Nom de la personne qui passe commande"></div>
       <div class="field field-blue"><label>Téléphone</label><input type="tel" id="c_phone" placeholder="06 00 00 00 00"></div>
       <div class="field field-blue"><label>Email <span class="req">*</span></label><input type="email" id="c_email" class="required" placeholder="contact@magasin.fr"></div>
@@ -926,12 +935,26 @@
 </section>
 
 <script>
+let bt49Shown=false;
 function goTab(id){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+id));
   document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
   document.querySelector('.bottombar').style.display = (id==='commande')?'flex':'none';
   window.scrollTo({top:0,behavior:'instant'});
+  if(id==='commande'&&!bt49Shown){bt49Shown=true;openBt49Info();}
 }
+function openBt49Info(){
+  document.getElementById('bt49Modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeBt49Info(e){
+  if(e&&e.target!==document.getElementById('bt49Modal')) return;
+  document.getElementById('bt49Modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') closeBt49Info();
+});
 
 document.querySelectorAll('.tabbar button').forEach(b=>{
   b.addEventListener('click',()=>goTab(b.dataset.tab));
@@ -1439,7 +1462,7 @@ CLIENT
   Point de vente : ${nom}
   Ville : ${ville||'-'}
   Code postal : ${cp||'-'}
-  Contact : ${v('c_contact')||'-'}
+${v('c_bt49')?`  Code BT-49 : ${v('c_bt49')}\n`:''}  Contact : ${v('c_contact')||'-'}
   Email : ${v('c_email')||'-'}
 ${v('c_notes')?`  Notes : ${v('c_notes')}\n`:''}
 ────────────────────────────────
@@ -1486,6 +1509,12 @@ const emailClient = v('c_email');
 const intro='Bonjour,\n\nMerci pour votre commande.\n\nVotre demande a bien été transmise. Notre équipe commerciale la traitera dans les meilleurs délais.\n\nVous trouverez ci-dessous le récapitulatif de votre commande.\n\n';
 const outro='\n\nCet e-mail est généré automatiquement.\nMerci de ne pas y répondre.\n\nPour toute question concernant votre commande, contactez votre commercial : '+emailCommercial+'\n';
 
+const emailBody = intro+corps+outro;
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+let emailHtml = '<pre style="font-family:inherit;white-space:pre-wrap;margin:0">'+escHtml(emailBody)+'</pre>';
+const bt49Val = v('c_bt49');
+if(bt49Val) emailHtml = emailHtml.replace('Code BT-49 : '+escHtml(bt49Val),'<strong style="color:#e11d2e">Code BT-49 : '+escHtml(bt49Val)+'</strong>');
+
 const btn = this;
 const label = btn.textContent;
 btn.classList.add('disabled');
@@ -1493,7 +1522,7 @@ btn.textContent = 'Envoi en cours…';
 fetch(MAILER_URL,{
   method:'POST',
   headers:{'Content-Type':'application/json'},
-  body:JSON.stringify({to:DESTINATAIRE,cc:[emailCommercial,emailClient].filter(Boolean),subject:objet,body:intro+corps+outro,replyTo:emailClient||undefined})
+  body:JSON.stringify({to:DESTINATAIRE,cc:[emailCommercial,emailClient].filter(Boolean),subject:objet,body:emailBody,html:emailHtml,replyTo:emailClient||undefined})
 }).then(res=>{
   if(!res.ok)throw new Error('send failed');
   return res.json();
@@ -1585,6 +1614,14 @@ function updateFlasque(){
 recompute();
 
 </script>
+
+<!-- BT-49 INFO MODAL -->
+<div class="bt49-modal" id="bt49Modal" onclick="closeBt49Info(event)">
+  <div class="bt49-card" onclick="event.stopPropagation()">
+    <button class="bt49-close" onclick="closeBt49Info()">&times;</button>
+    <img src="Images/BT%2049.png" alt="Facturation électronique : le code BT-49 sera indispensable à partir du 1er septembre 2026 pour le routage de vos factures électroniques.">
+  </div>
+</div>
 
 <div id="imageModal" class="modal" onclick="closeImage()">
     <img id="modalImg">
