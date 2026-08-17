@@ -1,0 +1,1742 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BtoB Hydratis</title>
+<style>
+  :root{
+    --eau:#0a9bd4;
+    --eau-fonce:#0673a3;
+    --eau-clair:#e3f5fc;
+    --encre:#0c2434;
+    --gris:#5d7080;
+    --gris-clair:#eef3f6;
+    --ligne:#d4e1e9;
+    --or:#e8a32c;
+    --vert:#138a52;
+    --vert-bg:#e4f5ec;
+    --blanc:#ffffff;
+    --ombre:0 1px 3px rgba(12,36,52,.08),0 4px 16px rgba(12,36,52,.06);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{font-size:16px;-webkit-text-size-adjust:100%}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:#ffffff;
+    color:var(--encre);
+    line-height:1.45;
+    padding-bottom:96px;
+  }
+
+  /* HEADER */
+  header{
+    background:#fff;
+    color:#0d2b52;
+    padding:18px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:1px solid #e8eef4;
+    box-shadow:0 2px 8px rgba(12,36,52,.06);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  header::after{content:none}
+  header::before{content:none;
+  }
+  .brand-combo{display:block;height:auto;width:auto;max-height:90px;max-width:100%;margin:0 auto;position:relative;z-index:1}
+  .op-badge{
+    display:inline-block;margin-top:12px;
+    background:var(--or);color:#3a2700;
+    font-weight:800;font-size:.72rem;letter-spacing:.5px;
+    padding:5px 12px;border-radius:30px;text-transform:uppercase;
+    position:relative;z-index:1;
+  }
+  .op-text{font-size:.84rem;margin-top:12px;opacity:.95;position:relative;z-index:1;line-height:1.5}
+  .op-deadline{font-weight:700}
+
+  /* SECTION CLIENT */
+  .client{
+    background:#fff;margin:14px;border-radius:14px;
+    box-shadow:var(--ombre);padding:16px;
+  }
+  .client h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;color:var(--gris);margin-bottom:12px;font-weight:700}
+  .field{margin-bottom:11px}
+  .field:last-child{margin-bottom:0}
+  .field label{display:block;font-size:.74rem;color:var(--gris);margin-bottom:4px;font-weight:600}
+  .field input{
+    width:100%;border:1.5px solid var(--ligne);border-radius:9px;
+    padding:11px 12px;font-size:1rem;color:var(--encre);background:#fbfdfe;
+    font-family:inherit;
+  }
+  .field input:focus{outline:none;border-color:var(--eau);background:#fff}
+  .field-row{display:flex;gap:10px}
+  .field-row .field{flex:1}
+
+  /* SECTIONS PRODUITS */
+  .section-title{
+    display:flex;align-items:center;gap:9px;
+    margin:22px 16px 10px;font-size:1.05rem;font-weight:800;
+  }
+  .section-title .pic{
+    width:30px;height:30px;border-radius:8px;background:var(--eau-clair);
+    display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;
+  }
+  .section-sub{font-size:.74rem;color:var(--gris);font-weight:500;margin:-4px 16px 12px}
+
+  .prod-list{margin:0 12px;display:flex;flex-direction:column;gap:9px}
+  .prod{
+    background:#fff;border-radius:12px;box-shadow:var(--ombre);
+    padding:13px 14px;border:1.5px solid transparent;transition:border-color .15s;
+  }
+  .prod.active{border-color:var(--eau)}
+  .prod-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .prod-main{display:flex;gap:11px;flex:1;min-width:0}
+  .prod-thumb{
+    width:54px;height:54px;border-radius:10px;flex-shrink:0;
+    background:#faf7f0;display:flex;align-items:center;justify-content:center;
+    font-size:1.4rem;overflow:hidden;position:relative;border:1px solid var(--ligne);
+  }
+  .prod-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+  cursor:pointer;
+  transition:transform .2s ease;
+}
+
+.prod-thumb img:hover{
+  transform:scale(1.05);
+}
+  .prod-thumb .ph{font-weight:800;font-size:.7rem;color:#fff;text-align:center;line-height:1;padding:3px}
+  .prod-info{flex:1;min-width:0}
+  .prod-name{font-weight:700;font-size:.95rem;flex:1}
+  .prod-ean{font-size:.66rem;color:var(--gris);font-family:'SF Mono',Menlo,monospace;margin-top:2px}
+  .prod-kpi{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+  .prod-kpi .kpi{
+    font-size:.68rem;background:var(--gris-clair);border-radius:6px;
+    padding:3px 7px;color:var(--encre);font-variant-numeric:tabular-nums;
+    display:inline-flex;align-items:baseline;gap:3px;
+  }
+  .prod-kpi .kpi b{font-weight:700;color:var(--gris);font-size:.6rem;text-transform:uppercase;letter-spacing:.3px}
+  .prod-kpi .kpi i{font-style:normal;font-size:.56rem;color:var(--gris);margin-left:1px}
+  .prod-kpi .kpi.marge{background:var(--vert-bg);color:var(--vert);font-weight:700}
+  .prod-kpi .kpi.marge b{color:var(--vert)}
+  .prod-kpi .kpi.marge.boosted{background:var(--vert);color:#fff;box-shadow:0 1px 4px rgba(19,138,82,.35)}
+  .prod-kpi .kpi.marge.boosted b{color:#cdeddd}
+  .prod-kpi .kpi.marge .marge-val{transition:none}
+  .prod-kpi .kpi.marge .m-base{opacity:.7;text-decoration:line-through;font-weight:600}
+  .prod-kpi .kpi.marge .m-arrow{opacity:.85;margin:0 1px}
+  .prod-kpi .kpi.marge .m-boost{font-weight:800}
+  .prod.flasque{border:1.5px solid var(--eau)}
+  .prod.flasque.locked{opacity:.6}
+  .prod-kpi .kpi s{opacity:.6;font-weight:600}
+  .prod-kpi .kpi .promo-pa{color:#d83a3a;font-weight:800}
+  .flasque-lock{
+    margin-top:11px;padding:9px 12px;background:#fff4e0;border:1px dashed var(--or);
+    border-radius:9px;font-size:.76rem;color:#8a5e00;font-weight:600;text-align:center;
+  }
+  .flasque-lock.unlocked{background:var(--vert-bg);border-color:#bce6cf;color:var(--vert)}
+  .flasque-total{
+    margin-top:11px;padding-top:11px;border-top:1px solid var(--ligne);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .flasque-total .ft-lbl{font-size:.78rem;color:var(--gris);font-weight:600}
+  .flasque-total .ft-val{font-size:1.05rem;font-weight:800;color:var(--eau-fonce);font-variant-numeric:tabular-nums}
+  .prod-ref{font-size:.66rem;color:var(--eau-fonce);font-weight:600;margin-top:1px}
+
+  .qty{display:flex;align-items:center;gap:0;border:1.5px solid var(--ligne);border-radius:9px;overflow:hidden;flex-shrink:0}
+  .qty button{
+    width:38px;height:38px;border:none;background:var(--gris-clair);
+    font-size:1.3rem;font-weight:600;color:var(--eau-fonce);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .qty button:active{background:var(--eau-clair)}
+  .qty input{
+    width:44px;height:38px;border:none;text-align:center;
+    font-size:1rem;font-weight:700;color:var(--encre);background:#fff;
+    font-family:inherit;-moz-appearance:textfield;
+  }
+  .qty input::-webkit-outer-spin-button,.qty input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+  .prod-detail{
+    margin-top:0;padding-top:10px;border-top:none;
+    display:none;font-size:.78rem;
+  }
+  .prod.open .prod-detail{display:block}
+  /* total toujours visible quand actif */
+  .prod > .line-total{display:none}
+  .prod.active > .line-total{display:flex;margin-top:10px;padding-top:0;border-top:none}
+  /* barre toggle */
+  .prod-toggle-bar{
+    display:none;margin-top:8px;padding:7px 12px;
+    background:var(--gris-clair);border-radius:8px;
+    font-size:.74rem;font-weight:700;color:var(--gris);
+    cursor:pointer;user-select:none;
+    align-items:center;justify-content:center;gap:6px;
+  }
+  .prod.active .prod-toggle-bar{display:flex}
+  .prod-toggle-bar .tb-arrow{display:inline-block;transition:transform .25s;font-size:.8rem}
+  .prod.open .prod-toggle-bar .tb-arrow{transform:rotate(180deg)}
+  .prod-toggle-bar:active{background:var(--eau-clair);color:var(--eau-fonce)}
+  .tier-pa-lbl{color:var(--vert);font-weight:700}
+  .tier-pa-val{color:var(--vert);font-weight:800}
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px}
+  .detail-grid .dl{color:var(--gris)}
+  .detail-grid .dv{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+  .line-total{
+    margin-top:9px;padding-top:9px;border-top:1px solid var(--ligne);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .line-total .lt-lbl{font-size:.78rem;color:var(--gris);font-weight:600}
+  .line-total .lt-val{font-size:1.05rem;font-weight:800;color:var(--eau-fonce);font-variant-numeric:tabular-nums}
+
+  /* BANDEAU GRATUIT */
+  .op-titre-bdc{
+    margin:14px 12px 0;background:linear-gradient(135deg,var(--or) 0%,#f4b942 100%);
+    border-radius:14px 14px 0 0;padding:12px 16px;color:#3a2700;text-align:left;
+  }
+  .op-titre-bdc .otb-tag{display:block;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+  .op-titre-bdc + .gift-banner{margin-top:0;border-radius:0 0 14px 14px}
+  .gift-banner{
+    margin:18px 12px 0;background:var(--vert-bg);border:1.5px solid #bce6cf;
+    border-radius:12px;padding:13px 15px;
+  }
+  .gift-banner .gb-title{font-weight:800;font-size:.9rem;color:var(--vert);display:flex;align-items:center;gap:7px}
+  .gift-banner .gb-intro{font-size:.78rem;color:var(--encre);margin-top:6px;opacity:.85}
+
+  .plv-gratuit-badge{display:inline-block;margin-top:5px;font-size:.7rem;font-weight:800;
+    color:#fff;background:var(--vert);border-radius:5px;padding:2px 8px}
+  .plv-prod{border:1.5px solid #c8d8ff;background:#f7f9ff}
+  .plv-lien{float:right;font-size:.72rem;font-weight:600}
+  .plv-lien a{color:var(--eau);text-decoration:none}
+  .plv-lien a:hover{text-decoration:underline}
+  .gift-tiers{margin-top:9px;display:flex;flex-direction:column;gap:5px}
+  .gift-grid{margin-top:10px;font-variant-numeric:tabular-nums}
+  .gift-grid .gg-head{
+    display:none;
+  }
+  .gift-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:0}
+  .gift-grid .gg-head{
+    display:block;font-size:.56rem;text-transform:uppercase;color:var(--vert);
+    font-weight:800;text-align:center;padding:6px 1px 7px;border-bottom:1.5px solid #bce6cf;
+  }
+  .gift-grid .gg-head:first-child{text-align:left}
+  .gift-grid .gg-r{text-align:right!important;padding-right:2px}
+  .ggrow{display:contents}
+  .ggrow > span{
+    font-size:.76rem;text-align:center;padding:8px 1px;color:var(--encre);
+    border-bottom:1px solid #d6efe0;display:flex;align-items:center;justify-content:center;
+  }
+  .ggrow > span:first-child{justify-content:flex-start;font-weight:700}
+  .ggrow > span.gg-mg{font-weight:800;color:var(--vert);justify-content:flex-end;padding-right:2px}
+  .ggrow:last-child > span{border-bottom:none}
+  .ggrow.max > span{background:rgba(232,163,44,.20);color:#8a5e00;font-weight:800}
+  .ggrow.max > span.gg-mg{color:#b5740a}
+  .ggrow.max > span:first-child::before{content:""}
+  .ggrow.hit > span{background:rgba(19,138,82,.16);font-weight:800}
+  .ggrow.hit.max > span{background:var(--vert);color:#fff;font-weight:800;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+  .ggrow.hit.max > span.gg-mg{color:#fff}
+  .ggrow.hit.max > span:first-child::before{content:"✅ "}
+  .gift-current{
+    margin-top:10px;padding-top:10px;border-top:1px solid #bce6cf;
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:.84rem;font-weight:700;
+  }
+  .gift-current .gc-val{color:var(--vert);font-size:1.1rem;font-weight:800}
+
+  /* RÉCAP */
+  .recap{
+    background:#fff;margin:18px 12px;border-radius:14px;
+    box-shadow:var(--ombre);overflow:hidden;
+  }
+  .recap-head{background:var(--encre);color:#fff;padding:13px 16px;font-weight:800;font-size:.95rem;letter-spacing:.3px}
+  .recap-body{padding:14px 16px}
+  .rcat{
+    background:var(--gris-clair);border-radius:11px;padding:11px 13px;margin-bottom:11px;
+  }
+  .rcat:last-child{margin-bottom:0}
+  .rcat-title{
+    font-size:.74rem;text-transform:uppercase;letter-spacing:.4px;color:var(--eau-fonce);
+    font-weight:800;margin-bottom:8px;padding-bottom:7px;border-bottom:1.5px solid var(--ligne);
+  }
+  .rcat-total{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-top:8px;padding-top:8px;border-top:1px solid var(--ligne);
+    font-weight:800;font-size:.92rem;color:var(--encre);font-variant-numeric:tabular-nums;
+  }
+  .rcat-total span:last-child{color:var(--eau-fonce)}
+  .rcat-totaux{background:var(--eau-clair)}
+  .rcat-totaux .rcat-title{color:var(--encre)}
+  .recap-block{margin-bottom:14px}
+  .recap-block:last-child{margin-bottom:0}
+  .recap-block h3{font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--gris);margin-bottom:8px;font-weight:700}
+  .rline{display:flex;justify-content:space-between;font-size:.86rem;padding:4px 0;font-variant-numeric:tabular-nums}
+  .rline .rl-lbl{color:var(--gris)}
+  .rline .rl-val{font-weight:600}
+  .rline.gift .rl-val{color:var(--vert)}
+  .rline.strong{font-weight:800;font-size:.95rem;border-top:1px solid var(--ligne);margin-top:6px;padding-top:9px}
+  .rline.strong .rl-lbl{color:var(--encre)}
+
+  .grand{
+    background:var(--eau-clair);margin:0;padding:16px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .grand .g-lbl{font-weight:800;font-size:.95rem}
+  .grand .g-val{font-weight:800;font-size:1.45rem;color:var(--eau-fonce);font-variant-numeric:tabular-nums}
+  .grand-ht{font-size:.72rem;color:var(--gris);font-weight:500}
+
+  /* BARRE FIXE */
+  /* ONGLETS */
+  .tabbar{
+    position:sticky;top:0;z-index:40;display:flex;background:#fff;
+    border-bottom:1px solid var(--ligne);box-shadow:0 2px 8px rgba(12,36,52,.04);
+  }
+  .tabbar button{
+    flex:1;border:none;background:none;font-family:inherit;cursor:pointer;
+    padding:13px 6px 11px;font-size:.78rem;font-weight:700;color:var(--gris);
+    border-bottom:3px solid transparent;transition:color .15s,border-color .15s;
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+  }
+  .tabbar button .ti{font-size:1.1rem}
+  .tabbar button.active{color:var(--eau-fonce);border-bottom-color:var(--eau)}
+  .tab-panel{display:none}
+  .tab-panel.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  /* OFFRES */
+  .offer-card{
+    background:#fff;margin:14px;border-radius:16px;overflow:hidden;box-shadow:var(--ombre);
+  }
+  .offer-visuals{
+    margin:30px auto;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    gap:30px;
+    flex-wrap:wrap;
+    max-width:1200px;
+}
+
+.offer-visu{
+    width:100%;
+    max-width:420px;
+    height:auto;
+    border-radius:14px;
+    box-shadow:var(--ombre);
+    cursor:pointer;
+    transition:.3s;
+}
+.modal{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.85);
+    justify-content:center;
+    align-items:center;
+    z-index:99999;
+}
+
+.modal img{
+    width:90vw;
+    height:90vh;
+    object-fit:contain;
+    border-radius:12px;
+}
+
+
+.offer-visu:hover{
+    transform:scale(1.02);
+}
+  .offer-hero{
+    background:linear-gradient(135deg,var(--or) 0%,#f4b942 100%);
+    padding:20px 18px;color:#3a2700;position:relative;overflow:hidden;
+  }
+  .offer-hero::after{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.18)}
+  .offer-hero .oh-tag{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;opacity:.8;white-space:nowrap}
+  .offer-hero .oh-title{font-size:1.4rem;font-weight:800;margin-top:4px;line-height:1.15;position:relative;z-index:1}
+  .offer-hero .oh-dates{font-size:.8rem;font-weight:700;margin-top:8px;opacity:.85}
+  .offer-body{padding:16px 18px}
+  .offer-body p{font-size:.9rem;color:var(--encre);margin-bottom:12px;line-height:1.5}
+  .offer-mecanique{background:var(--vert-bg);border-radius:11px;padding:13px 15px;margin-bottom:14px}
+  .offer-mecanique h4{font-size:.8rem;color:var(--vert);font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .offer-mecanique .om-row{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;color:var(--encre)}
+  .offer-mecanique .om-row b{color:var(--vert)}
+  .offer-cta{
+    display:block;width:100%;background:var(--eau);color:#fff;border:none;
+    border-radius:11px;padding:14px;font-size:.95rem;font-weight:800;font-family:inherit;
+    cursor:pointer;box-shadow:0 4px 12px rgba(10,155,212,.3);text-align:center;
+  }
+  .offre-visual{margin:20px auto;max-width:860px;padding:0 14px;}
+  .offre-cta-wrap{margin:14px 14px 0}
+  @media (min-width:1600px){
+    .offre-visual{max-width:1150px}
+    .offre-cta-wrap{max-width:1150px;margin-left:auto;margin-right:auto}
+  }
+  .offer-cta:active{transform:scale(.98)}
+  .offer-flasque{
+    background:#eef7ff;border:1.5px solid var(--eau);border-radius:12px;
+    padding:12px 14px;margin-bottom:14px;
+  }
+  .offer-flasque .of-badge{font-size:.7rem;font-weight:800;color:var(--eau-fonce);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+  .offer-flasque .of-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .offer-flasque .of-title{font-weight:700;font-size:.9rem;color:var(--encre)}
+  .offer-flasque .of-sub{font-size:.72rem;color:var(--gris);margin-top:1px}
+  .offer-flasque .of-price{text-align:right;flex-shrink:0}
+  .offer-flasque .of-pa{display:block;font-size:.95rem;font-weight:800;color:#d83a3a}
+  .offer-flasque .of-pa s{color:var(--gris);font-weight:500;font-size:.78rem}
+  .offer-flasque .of-pa small{font-size:.6rem;color:var(--gris);font-weight:600}
+  .offer-flasque .of-marge{display:inline-block;margin-top:3px;font-size:.7rem;font-weight:800;color:#fff;background:var(--vert);border-radius:5px;padding:2px 7px}
+
+  /* RESSOURCES */
+  .res-intro{font-size:.86rem;color:var(--gris);margin:16px 16px 4px;line-height:1.5}
+  .res-list{margin:8px 12px;display:flex;flex-direction:column;gap:10px}
+  .res-item{
+    display:flex;align-items:center;gap:13px;background:#fff;border-radius:12px;
+    box-shadow:var(--ombre);padding:14px;text-decoration:none;color:inherit;
+    border:1.5px solid transparent;transition:border-color .15s;
+  }
+  .res-item:active{border-color:var(--eau)}
+  .res-ic{
+    width:44px;height:44px;border-radius:10px;flex-shrink:0;display:flex;
+    align-items:center;justify-content:center;font-size:1.4rem;background:var(--eau-clair);
+  }
+  .res-ic.vid{background:#ffe4e4}
+  .res-ic.pdf{background:#ffe9d6}
+  .res-tx{flex:1;min-width:0}
+  .res-tx .rt-title{font-weight:700;font-size:.92rem;display:block}
+  .res-tx .rt-sub{font-size:.74rem;color:var(--gris);margin-top:2px;display:block}
+  .res-arrow{color:var(--gris);font-size:1.2rem;flex-shrink:0}
+  .res-empty{
+    margin:4px 16px;font-size:.74rem;color:var(--gris);font-style:italic;
+    background:var(--gris-clair);border-radius:8px;padding:9px 12px;border:1px dashed var(--ligne);
+  }
+  .res-soon{opacity:.55;pointer-events:none}
+  .res-soon .res-arrow{font-size:.7rem;font-style:normal}
+
+  .bottombar{
+    position:fixed;bottom:0;left:0;right:0;z-index:50;
+    background:#fff;border-top:1px solid var(--ligne);
+    padding:12px 16px;display:flex;align-items:center;gap:14px;
+    box-shadow:0 -2px 16px rgba(12,36,52,.08);
+  }
+  .bb-info{flex:1}
+  .bb-info .bb-lbl{font-size:.68rem;color:var(--gris);text-transform:uppercase;letter-spacing:.4px;font-weight:700}
+  .bb-info .bb-val{font-size:1.25rem;font-weight:800;color:var(--encre);font-variant-numeric:tabular-nums}
+  .bb-btn{
+    background:var(--eau);color:#fff;border:none;border-radius:11px;
+    padding:13px 22px;font-size:.95rem;font-weight:800;font-family:inherit;cursor:pointer;
+    box-shadow:0 4px 12px rgba(10,155,212,.3);
+  }
+  .bb-btn:active{transform:scale(.97)}
+  .bb-btn.disabled{background:var(--ligne);color:#9fb3c0;box-shadow:none;pointer-events:none}
+
+  .empty-note{text-align:center;color:var(--gris);font-size:.82rem;padding:8px 16px 0}
+  footer{text-align:center;font-size:.68rem;color:var(--gris);padding:6px 16px 14px}
+
+  /* VOS INFOS — bulle */
+  .bulle-infos{margin:14px 14px 0;border-radius:16px;background:#fff;box-shadow:var(--ombre);overflow:hidden;border:1.5px solid var(--ligne)}
+  .bulle-header{display:flex;align-items:center;padding:14px 16px;background:var(--eau-clair)}
+  .bulle-header h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;color:var(--eau-fonce);font-weight:800;margin:0;display:flex;align-items:center;gap:8px}
+  .bulle-body{padding:16px}
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .fgrid .field.full{grid-column:1/-1}
+  /* Bulle bleue — magasin */
+  .field-bulle input{border-radius:999px;padding:10px 18px;font-size:.98rem;font-weight:700;background:var(--eau-clair);border-color:var(--eau);border-width:2px}
+  .field-bulle input:focus{border-color:var(--eau-fonce);box-shadow:0 0 0 3px rgba(10,155,212,.2)}
+  /* Champs bleus secondaires — CP, Ville */
+  .field-green input{background:var(--eau-clair);border-color:var(--eau);border-width:1.5px}
+  .field-green input:focus{border-color:var(--eau-fonce);box-shadow:0 0 0 3px rgba(10,155,212,.2)}
+  /* Bulle grise — contact */
+  .field-bulle-blue input{border-radius:999px;padding:10px 18px;font-size:.98rem;font-weight:700;background:var(--gris-clair);border-color:var(--gris);border-width:2px}
+  .field-bulle-blue input:focus{border-color:var(--encre);box-shadow:0 0 0 3px rgba(12,36,52,.12)}
+  /* Champs gris — téléphone, email */
+  .field-blue input{background:var(--gris-clair);border-color:var(--ligne)}
+  .field-blue input:focus{border-color:var(--gris);box-shadow:0 0 0 3px rgba(93,112,128,.15)}
+  .field-notes{margin-top:10px}
+  .field-notes label{display:block;font-size:.72rem;color:var(--gris);margin-bottom:4px;font-weight:600}
+  .field-notes textarea{width:100%;border:1.5px solid #ccc;border-radius:14px;padding:10px 14px;font-size:.88rem;font-family:inherit;background:#F2F2F0;color:var(--encre-dk);resize:none;min-height:66px;box-sizing:border-box}
+  .field-notes textarea:focus{outline:none;border-color:#aaa;box-shadow:0 0 0 3px rgba(120,120,120,.15)}
+  .req{color:#d83a3a}
+  .info-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--encre);color:#fff;font-size:.68rem;font-weight:700;font-style:italic;font-family:Georgia,serif;cursor:pointer;margin-left:5px;vertical-align:middle;line-height:1;user-select:none}
+  .info-icon:hover{background:var(--eau-fonce)}
+  .bt49-modal{display:none;position:fixed;inset:0;background:rgba(12,36,52,.55);z-index:210;align-items:center;justify-content:center;padding:20px}
+  .bt49-modal.open{display:flex}
+  .bt49-card{background:#fff;border-radius:16px;max-width:560px;width:100%;padding:0;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.3);overflow:hidden}
+  .bt49-card img{display:block;width:100%;height:auto}
+  .bt49-close{position:absolute;top:10px;right:10px;font-size:1.5rem;cursor:pointer;color:#fff;line-height:1;background:rgba(12,36,52,.6);border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center}
+  .bt49-close:hover{background:rgba(12,36,52,.85)}
+  .secteur-info{margin-top:10px;font-size:.8rem;padding:9px 12px;border-radius:9px;background:#fbfbf9;border:1px solid var(--ligne);color:var(--gris)}
+  .secteur-info.ok{background:var(--eau-clair);border-color:var(--eau);color:var(--eau-fonce);font-weight:600}
+  .secteur-info.warn{background:#ffe8de;border-color:#ffbfa0;color:#c0390a;font-weight:600}
+  .cp-wrap{position:relative}
+  .cp-drop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--eau);border-radius:10px;box-shadow:0 6px 18px rgba(10,155,212,.14);z-index:200;overflow:hidden;display:none}
+  .cp-drop.open{display:block}
+  .cp-opt{padding:9px 14px;font-size:.87rem;cursor:pointer;border-bottom:1px solid var(--ligne);display:flex;gap:8px;align-items:baseline}
+  .cp-opt:last-child{border-bottom:none}
+  .cp-opt:hover,.cp-opt:focus{background:var(--eau-clair);outline:none}
+  .cp-opt b{color:var(--eau-fonce);font-weight:700;min-width:48px}
+
+
+</style>
+</head>
+<body>
+
+<header>
+  <img class="brand-combo" src="data:image/png;base64,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" alt="Hydratis × Intersport">
+</header>
+
+<!-- ONGLETS -->
+<nav class="tabbar">
+  <button class="active" data-tab="offres"><span class="ti">📣</span>Actualités</s></button>
+  <button data-tab="commande"><span class="ti">🧾</span>Bon de commande</button>
+  <button data-tab="ressources"><span class="ti">📁</span>Ressources</button>
+</nav>
+
+<!-- PANEL OFFRES -->
+<section class="tab-panel active" id="tab-offres">
+  <div class="offre-visual" id="offreVisualEte">
+    <div style="border-radius:16px;overflow:hidden;box-shadow:var(--ombre);">
+      <picture>
+        <source media="(min-width:640px)" srcset="Images/op-tubes-pc.webp">
+        <img src="Images/tubes-mobile.webp" alt="Offre tubes" style="width:auto;max-width:100%;height:auto;max-height:calc(100vh - 260px);display:block;margin:0 auto;cursor:pointer;" onclick="openImage(this.currentSrc)">
+      </picture>
+    </div>
+  </div>
+  <div class="offre-visual" id="offreVisualFlasques" style="display:none">
+    <div style="border-radius:16px;overflow:hidden;box-shadow:var(--ombre);">
+      <picture>
+        <source media="(min-width:640px)" srcset="Images/op-flasques-autre-pc.webp">
+        <img src="Images/offre-flasques-autre.webp" alt="Opération Flasques" style="width:auto;max-width:100%;height:auto;max-height:calc(100vh - 260px);display:block;margin:0 auto;cursor:pointer;" onclick="openImage(this.currentSrc)">
+      </picture>
+    </div>
+  </div>
+  <div class="offre-visual" id="offreVisualAucune" style="display:none">
+    <div style="border-radius:16px;padding:44px 22px;text-align:center;background:var(--gris-clair);color:var(--gris);font-weight:600;box-shadow:var(--ombre);">
+      Aucune opération commerciale en cours actuellement.<br>Contactez votre commercial pour connaître les prochaines offres.
+    </div>
+  </div>
+  <div class="offre-cta-wrap">
+    <button class="offer-cta" onclick="goTab('commande')">Passer commande →</button>
+  </div>
+</section>
+
+<!-- PANEL COMMANDE -->
+<section class="tab-panel" id="tab-commande">
+
+<!-- CLIENT — bulle -->
+<div class="bulle-infos" id="bulleInfos">
+  <div class="bulle-header">
+    <h2>👤 Vos infos</h2>
+  </div>
+  <div class="bulle-body">
+    <div class="fgrid">
+      <div class="field full field-bulle"><label>Nom du magasin <span class="req">*</span></label><input type="text" id="c_name" class="required" placeholder="ex : runbike 2000"></div>
+      <div class="field field-green"><label>Code postal <span class="req">*</span></label><div class="cp-wrap"><input type="text" id="c_cp" class="required" inputmode="numeric" maxlength="5" placeholder="75000" oninput="cpInput()" autocomplete="off"><div id="cp-drop" class="cp-drop"></div></div></div>
+      <div class="field field-green"><label>Ville</label><input type="text" id="c_ville" placeholder="Ville"></div>
+      <div class="field full field-green"><label>Code BT-49 <span class="info-icon" onclick="openBt49Info()" role="button" tabindex="0" aria-label="Qu'est-ce que le code BT-49 ?">i</span></label><input type="text" id="c_bt49" placeholder="Identifiant d'adressage de facture électronique" autocomplete="off"></div>
+      <div class="field full field-bulle-blue"><label>Contact / Acheteur <span class="req">*</span></label><input type="text" id="c_contact" class="required" placeholder="Nom de la personne qui passe commande"></div>
+      <div class="field field-blue"><label>Téléphone</label><input type="tel" id="c_phone" placeholder="06 00 00 00 00"></div>
+      <div class="field field-blue"><label>Email <span class="req">*</span></label><input type="email" id="c_email" class="required" placeholder="contact@magasin.fr"></div>
+    </div>
+    <div class="field-notes">
+      <label>Notes</label>
+      <textarea id="c_notes" placeholder="Commentaires / infos / n° de commande"></textarea>
+    </div>
+    <div id="secteur-info" class="secteur-info">Renseignez le code postal pour adresser la commande au bon commercial.</div>
+  </div>
+</div>
+
+<!-- GRATUIT (remonté en tête) -->
+<div id="promoEte">
+<div class="op-titre-bdc">
+  <span class="otb-tag">☀️ Opération Été 2026 ☀️</span>
+</div>
+<div class="gift-banner" id="giftBanner">
+  <div class="gb-intro-accroche" style="font-size:.9rem;font-weight:800;color:var(--vert);display:flex;align-items:center;gap:7px;">Jusqu'à 46,3 % de marge sur les tubes grâce aux offres volumiques</div>
+  <p class="gb-intro">Votre marge progresse à chaque palier de commande :</p>
+  <div class="gift-grid">
+    <div class="gg-head">Palier</div><div class="gg-head">Coeff</div><div class="gg-head gg-r">Marge</div>
+    <div class="gift-tier ggrow" data-tier="9"><span>9 dont 1 offert</span><span>1,94</span><span class="gg-mg">45,6 %</span></div>
+    <div class="gift-tier ggrow max" data-tier="16"><span>16 dont 2 offerts</span><span>1,96</span><span class="gg-mg">46,3 %</span></div>
+  </div>
+  <div class="gift-current">
+    <span>Displays commandés : <span id="gc_count">0</span></span>
+    <span>Offerts : <span class="gc-val" id="gc_free">0</span></span>
+  </div>
+</div>
+</div>
+
+<div id="promoFlasques" style="display:none">
+<div class="op-titre-bdc">
+  <span class="otb-tag">🆕 Opération Flasques 🆕</span>
+</div>
+<div class="gift-banner" id="giftBannerFlasques">
+  <div class="gb-intro-accroche" style="font-size:.9rem;font-weight:800;color:var(--vert);display:flex;align-items:center;gap:7px;">Jusqu'à 20 flasques et 1 PLV de sol offerts grâce aux offres volumiques</div>
+  <p class="gb-intro">Vos flasques offertes progressent à chaque palier de commande (du 01/09/2026 au 31/10/2026) :</p>
+  <div class="gift-grid">
+    <div class="gg-head">Palier</div><div class="gg-head">Flasques</div><div class="gg-head gg-r">PLV de sol</div>
+    <div class="gift-tier ggrow" data-tier="9"><span>9 packs (72 tubes)</span><span>10 offertes</span><span class="gg-mg">1 offerte</span></div>
+    <div class="gift-tier ggrow max" data-tier="16"><span>16 packs (128 tubes)</span><span>20 offertes</span><span class="gg-mg">1 offerte</span></div>
+  </div>
+  <div class="gift-current">
+    <span>Displays commandés : <span id="gc_count_fl">0</span></span>
+    <span>Flasques offertes : <span class="gc-val" id="gc_freefl">0</span></span>
+  </div>
+</div>
+</div>
+
+<!-- TUBES -->
+<div class="section-title"><span class="pic">🧊</span> DISPLAYS DE 8 TUBES</div>
+<p class="section-sub">PCB display de 8 • livré prérempli</p>
+<div class="prod-list" id="list-tubes"></div>
+
+<!-- FLASQUES -->
+<div class="section-title" style="margin-top:26px"><span class="pic">💧</span> FLASQUES SOUPLES</div>
+<p class="section-sub"><span style="display:inline-block;background:var(--eau);color:#fff;font-size:.65rem;font-weight:800;border-radius:5px;padding:2px 8px;vertical-align:middle;margin-right:6px;">NOUVEAU</span>PCB de 10 • 500 ml</p>
+<div class="prod-list">
+  <div class="prod flasque" id="flasque-card">
+    <div class="prod-top">
+      <div class="prod-main">
+        <div class="prod-thumb" id="flasque-thumb" style="background:#faf7f0">
+  <img src="Images/FLASQUE_SOUPLE_10.webp"
+       alt="Flasque Hydratis"
+       onclick="openImage(this.src)"
+       style="cursor:pointer">
+</div>
+        <div class="prod-info">
+          <div class="prod-name">Flasques souples</div>
+          <div class="prod-ref">FLAS_ACCROCHE_500</div>
+          <div class="prod-ean">EAN 3760304103889 · qté en lots de 10</div>
+          <div class="prod-kpi">
+            <span class="kpi"><b>PA</b> 5,99 €<i>HT / flasque</i></span>
+            <span class="kpi"><b>PV</b> 12,95 €<i>TTC</i></span>
+            <span class="kpi marge"><b>Marge</b> <span class="marge-val">44,5 %</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="qty">
+        <button data-act="minus" id="fl-minus">−</button>
+        <input type="number" inputmode="numeric" value="0" min="0" id="fl-qty">
+        <button data-act="plus" id="fl-plus">+</button>
+      </div>
+    </div>
+    <div class="line-total">
+      <span class="lt-lbl">Total HT ligne</span>
+      <span class="lt-val" id="fl-total">0,00 €</span>
+    </div>
+    <div class="prod-toggle-bar"><span class="tb-arrow">▾</span> Détails prix</div>
+    <div class="prod-detail">
+      <div class="detail-grid">
+        <span class="dl">Base HT / flasque</span><span class="dv">9,51 €</span>
+        <span class="dl">Remise 37 %</span><span class="dv">5,99 €</span>
+        <span class="dl">Tarif net HT</span><span class="dv">5,99 €</span>
+        <span class="dl">PMC TTC</span><span class="dv">12,95 €</span>
+        <span class="dl">Marge</span><span class="dv">44,5 %</span>
+        <span class="dl">Coeff</span><span class="dv">2,16</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GOURDES -->
+<div class="section-title" style="margin-top:26px"><span class="pic">🥤</span> GOURDES ISOTHERMES</div>
+<p class="section-sub">PCB unitaire • 500 ml</p>
+<div class="prod-list" id="list-gourdes"></div>
+
+
+<!-- PACK 20 -->
+<div class="section-title" style="margin-top:26px"><span class="pic">📦</span> DISPLAY DE 20 TUBES</div>
+<p class="section-sub">Display prérempli • assortiment de saveurs</p>
+<div class="prod-list" id="list-pack20"></div>
+
+<!-- PLV -->
+<div class="section-title" style="margin-top:26px"><span class="pic">📣</span> PLV/ILV </div>
+<p class="section-sub"><span style="display:inline-block;background:var(--vert);color:#fff;font-size:.65rem;font-weight:800;border-radius:5px;padding:2px 8px;vertical-align:middle;">GRATUIT</span></p>
+<div class="prod-list">
+  <div class="prod plv-prod" id="plv-PLV_COMPTOIR_20TU">
+    <div class="prod-top">
+      <div class="prod-main">
+        <div class="prod-thumb" style="background:#f0f4ff">
+  <img src="Images/PLV_COMPTOIR.webp"
+       alt="Présentoir de comptoir vide"
+       onclick="openImage(this.src)"
+       style="cursor:pointer">
+</div>
+        <div class="prod-info">
+          <div class="prod-name">Présentoir de comptoir vide</div>
+          <div class="prod-ref">PLV_COMPTOIR_20TU</div>
+          <div class="prod-ean">Peut contenir 20 tubes · L23×H29×P25 cm</div>
+          
+        </div>
+      </div>
+      <div class="qty">
+        <button data-act="minus" data-plv="PLV_COMPTOIR_20TU">−</button>
+        <input type="number" inputmode="numeric" value="0" min="0" data-plv="PLV_COMPTOIR_20TU" class="plv-qty">
+        <button data-act="plus" data-plv="PLV_COMPTOIR_20TU">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="prod plv-prod" id="plv-PLV_SOL">
+    <div class="prod-top">
+      <div class="prod-main">
+        <div class="prod-thumb" style="background:#f0f4ff">
+       <img src="Images/PLV_SOL.webp"
+     alt="PLV de sol"
+     onclick="openImage(this.src)"
+     style="cursor:pointer"> 
+     </div>  
+        <div class="prod-info">
+          <div class="prod-name">PLV de sol</div>
+          <div class="prod-ref">PLV_SOL</div>
+          <div class="prod-ean">Présentoir en carton · 144 tubes · L33×H140×P35 cm</div>
+          <div class="prod-ean" id="plvSolNote" style="color:#8a5e00;font-style:italic;font-size:.68rem;margin-top:3px;">⚠️ Sous réserve d'avoir déjà commandé au minimum 144 tubes</div>
+          
+        </div>
+      </div>
+      <div class="qty">
+        <button data-act="minus" data-plv="PLV_SOL">−</button>
+        <input type="number" inputmode="numeric" value="0" min="0" data-plv="PLV_SOL" class="plv-qty">
+        <button data-act="plus" data-plv="PLV_SOL">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="prod plv-prod" id="plv-PLV_STOP_RAYON">
+    <div class="prod-top">
+      <div class="prod-main">
+        <div class="prod-thumb" style="background:#f0f4ff">
+          <img src="Images/PLV_STOP_RAYON.webp"
+     alt="Stop rayon"
+     onclick="openImage(this.src)"
+     style="cursor:pointer">
+     </div>  
+        <div class="prod-info">
+          <div class="prod-name">Stop rayon</div>
+          <div class="prod-ref">PLV_STOP_RAYON</div>
+          <div class="prod-ean">Papier plastifié · 12 cm de diamètre</div>
+          
+        </div>
+      </div>
+      <div class="qty">
+        <button data-act="minus" data-plv="PLV_STOP_RAYON">−</button>
+        <input type="number" inputmode="numeric" value="0" min="0" data-plv="PLV_STOP_RAYON" class="plv-qty">
+        <button data-act="plus" data-plv="PLV_STOP_RAYON">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="prod plv-prod" id="plv-PLV_CHEVALET_A5">
+    <div class="prod-top">
+      <div class="prod-main">
+        <div class="prod-thumb" style="background:#f0f4ff">
+          <img src="Images/PLV_CHEVALET_A5.webp"
+     alt="Chevalet de table A5"
+     onclick="openImage(this.src)"
+     style="cursor:pointer">
+     </div>  
+        <div class="prod-info">
+          <div class="prod-name">Chevalet de table A5</div>
+          <div class="prod-ref">PLV_CHEVALET_A5</div>
+          <div class="prod-ean">Papier épais · Format A5 (15×21 cm)</div>
+          
+        </div>
+      </div>
+      <div class="qty">
+        <button data-act="minus" data-plv="PLV_CHEVALET_A5">−</button>
+        <input type="number" inputmode="numeric" value="0" min="0" data-plv="PLV_CHEVALET_A5" class="plv-qty">
+        <button data-act="plus" data-plv="PLV_CHEVALET_A5">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="prod plv-prod" id="plv-PLV_SUPPORT_FLYER_A6">
+  <div class="prod-top">
+    <div class="prod-main">
+    <div class="prod-thumb" style="background:#f0f4ff">
+        <img src="Images/PLV_SUPPORT_FLYER_A6.webp"
+             alt="Support flyers A6"
+             onclick="openImage(this.src)"
+             style="cursor:pointer">
+    </div>
+    <div class="prod-info">
+        <div class="prod-name">Support flyers A6</div>
+        <div class="prod-ref">PLV_SUPPORT_FLYER_A6</div>
+        <div class="prod-ean">Flyer A6 recto verso + support en carton</div>
+
+        </div>
+      </div>
+      <div class="qty">
+        <button data-act="minus" data-plv="PLV_SUPPORT_FLYER_A6">−</button>
+        <input type="number" inputmode="numeric" value="0" min="0" data-plv="PLV_SUPPORT_FLYER_A6" class="plv-qty">
+        <button data-act="plus" data-plv="PLV_SUPPORT_FLYER_A6">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="prod plv-prod" id="plv-PLV_FLYER_A6">
+    <div class="prod-top">
+      <div class="prod-main">
+        <div class="prod-thumb" style="background:#f0f4ff">
+          <img src="Images/FLYER.webp"
+     alt="flyer a6"
+     onclick="openImage(this.src)"
+     style="cursor:pointer">
+     </div>  
+        <div class="prod-info">
+          <div class="prod-name">Lot de 100 flyers A6</div>
+          <div class="prod-ref">PLV_FLYER_A6</div>
+          <div class="prod-ean">Flyer A6 recto verso</div>
+          
+        </div>
+      </div>
+      <div class="qty">
+        <button data-act="minus" data-plv="PLV_FLYER_A6">−</button>
+        <input type="number" inputmode="numeric" value="0" min="0" data-plv="PLV_FLYER_A6" class="plv-qty">
+        <button data-act="plus" data-plv="PLV_FLYER_A6">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="prod plv-prod" id="plv-PLV_MACA_PEC">
+    <div class="prod-top">
+      <div class="prod-main">
+        <div class="prod-thumb" style="background:#f0f4ff">
+             <img src="Images/PLV_MACA_PEC.webp"
+     alt="Stop rayon"
+     onclick="openImage(this.src)"
+     style="cursor:pointer">
+     </div> 
+        <div class="prod-info">
+          <div class="prod-name">Sticker macaron vitrine</div>
+          <div class="prod-ref">PLV_MACA_PEC</div>
+          <div class="prod-ean">Sticker autocollant · 30 cm de diamètre</div>
+          
+        </div>
+      </div>
+      <div class="qty">
+        <button data-act="minus" data-plv="PLV_MACA_PEC">−</button>
+        <input type="number" inputmode="numeric" value="0" min="0" data-plv="PLV_MACA_PEC" class="plv-qty">
+        <button data-act="plus" data-plv="PLV_MACA_PEC">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECAP -->
+<div class="recap">
+  <div class="recap-head">Récapitulatif de la commande</div>
+  <div class="recap-body">
+
+    <div class="rcat">
+      <div class="rcat-title">🧊 DISPLAYS DE 8 TUBES</div>
+      <div class="rline"><span class="rl-lbl">Nb de displays</span><span class="rl-val" id="r_nbtubes">0</span></div>
+      <div class="rline gift"><span class="rl-lbl">Dont displays offerts</span><span class="rl-val" id="r_gratuit">—</span></div>
+      <div class="rcat-total"><span>Total HT tubes</span><span id="r_httubes">0,00 €</span></div>
+    </div>
+
+    <div class="rcat">
+      <div class="rcat-title">📦 DISPLAY DE 20 TUBES</div>
+      <div class="rline"><span class="rl-lbl">Nb de displays de 20</span><span class="rl-val" id="r_nbpack20">0</span></div>
+      <div class="rcat-total"><span>Total HT display 20</span><span id="r_htpack20">0,00 €</span></div>
+    </div>
+
+    <div class="rcat">
+      <div class="rcat-title">🥤 GOURDES ISOTHERMES</div>
+      <div class="rline"><span class="rl-lbl">Nb de gourdes</span><span class="rl-val" id="r_nbgourdes">0</span></div>
+      <div class="rcat-total"><span>Total HT gourdes</span><span id="r_htgourdes">0,00 €</span></div>
+    </div>
+
+    <div class="rcat">
+      <div class="rcat-title">💧 FLASQUES SOUPLES</div>
+      <div class="rline"><span class="rl-lbl">Nb de flasques</span><span class="rl-val" id="r_nbflasques">0</span></div>
+      <div class="rline gift" id="r_flgratuit_row" style="display:none"><span class="rl-lbl">Dont flasques offertes</span><span class="rl-val" id="r_flgratuit">0</span></div>
+      <div class="rcat-total"><span>Total HT flasques</span><span id="r_htflasques">0,00 €</span></div>
+    </div>
+
+    <div class="rcat">
+      <div class="rcat-title">📣 PLV / ILV <span style="font-size:.62rem;font-weight:700;color:var(--vert);background:var(--vert-bg);border-radius:4px;padding:1px 7px;margin-left:5px;">GRATUIT</span></div>
+      <div id="r_plv_list"><div class="rline"><span class="rl-lbl" style="color:var(--gris);font-style:italic;">Aucun matériel sélectionné</span></div></div>
+      <div style="margin-top:9px;padding:8px 11px;background:#fff4e0;border:1px dashed var(--or);border-radius:8px;font-size:.72rem;color:#8a5e00;font-weight:600;line-height:1.4;">
+        ⚠️ Sous réserve de validation par le responsable de secteur
+      </div>
+    </div>
+
+    <div class="rcat rcat-totaux">
+      <div class="rcat-title">Totaux</div>
+      <div class="rline"><span class="rl-lbl">Total HT</span><span class="rl-val" id="r_totalht">0,00 €</span></div>
+      <div class="rline"><span class="rl-lbl">TVA 5,5 % (tubes)</span><span class="rl-val" id="r_tva55">0,00 €</span></div>
+      <div class="rline"><span class="rl-lbl">TVA 20 % (gourdes/flasques)</span><span class="rl-val" id="r_tva20">0,00 €</span></div>
+    </div>
+
+  </div>
+  <div class="grand">
+    <div><div class="g-lbl">Total TTC</div><div class="grand-ht" id="g_ht">— HT</div></div>
+    <div class="g-val" id="g_ttc">0,00 €</div>
+  </div>
+  <div class="rline"><span class="rl-lbl">Franco de port</span><span class="rl-val">200,00 € HT minimum</span></div>
+</div>
+
+<footer>Tarifs 2026 • PA = prix d'achat net (remise 37 %) • PV = prix conseillé TTC • Document de travail</footer>
+
+<!-- BARRE FIXE -->
+<div class="bottombar">
+  <div class="bb-info">
+    <div class="bb-lbl">Total TTC</div>
+    <div class="bb-val" id="bb_ttc">0,00 €</div>
+  </div>
+  <button class="bb-btn disabled" id="bb_btn">VALIDER LA COMMANDE</button>
+</div>
+
+</section>
+<!-- FIN PANEL COMMANDE -->
+
+<!-- PANEL RESSOURCES -->
+<section class="tab-panel" id="tab-ressources">
+  <p class="res-intro">Retrouvez ici les supports commerciaux et produits Hydratis. Cliquez pour consulter ou télécharger.</p>
+
+  <div class="res-list">
+    <!-- 🔧 RESSOURCES : remplace les href="#" par tes liens (PDF, YouTube...). 
+         Pour activer un lien, retire la classe "res-soon" de la ligne concernée. -->
+
+    <a class="res-item" href="Ressources/Plaquette sport.pdf" target="_blank" rel="noopener">
+      <span class="res-ic pdf">📄</span>
+      <span class="res-tx"><span class="rt-title">Plaquette commerciale</span><span class="rt-sub">Présentation de la gamme et des arguments de vente</span></span>
+      
+    </a>
+
+    <a class="res-item" href="Ressources/Catalogue PLV Hydratis.pdf" target="_blank" rel="noopener">
+      <span class="res-ic pdf">📦</span>
+      <span class="res-tx"><span class="rt-title">Catalogue PLV</span><span class="rt-sub"></span></span>
+      
+    </a>
+
+    <a class="res-item"
+   href="Ressources/video 1 mdp.mp4"
+   target="_blank"
+   rel="noopener">
+  <span class="res-ic vid">🏖️</span>
+  <span class="res-tx">
+    <span class="rt-title">Spot météo des plages</span>
+  </span>
+  <span class="res-arrow">ouvrir</span>
+</a>
+
+<a class="res-item"
+   href="Ressources/Video 2 mdp.mp4"
+   target="_blank"
+   rel="noopener">
+  <span class="res-ic vid">🏖️</span>
+  <span class="res-tx">
+    <span class="rt-title">Spot météo des plages</span>
+  </span>
+  <span class="res-arrow">ouvrir</span>
+</a>
+
+<a class="res-item"
+   href="https://www.youtube.com/watch?v=rf0JLwKsswg"
+   target="_blank"
+   rel="noopener">
+  <span class="res-ic vid">▶️</span>
+  <span class="res-tx">
+    <span class="rt-title">Spot Koh-Lanta</span>
+  </span>
+  <span class="res-arrow">ouvrir</span>
+</a>
+
+<a class="res-item"
+   href="https://www.youtube.com/watch?v=S59bPeMld-g"
+   target="_blank"
+   rel="noopener">
+  <span class="res-ic vid">▶️</span>
+  <span class="res-tx">
+    <span class="rt-title">Spot Koh-Lanta</span>
+  </span>
+  <span class="res-arrow">ouvrir</span>
+</a>
+
+    <a class="res-item" href="Ressources/Fiche technique produits Hydratis.pdf" target="_blank" rel="noopener">
+      <span class="res-ic">🔬</span>
+      <span class="res-tx"><span class="rt-title">Fiches techniques produits</span><span class="rt-sub"></span></span>
+
+    </a>
+
+    <a class="res-item" href="Ressources/BDC Hydratis - Meteo des plages.xlsx" target="_blank" rel="noopener">
+      <span class="res-ic">💰</span>
+      <span class="res-tx"><span class="rt-title">Tarif 2026</span><span class="rt-sub">Télécharger le tarif au format Excel</span></span>
+    </a>
+  </div>
+
+</section>
+
+<script>
+let bt49Shown=false;
+function goTab(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+id));
+  document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+  document.querySelector('.bottombar').style.display = (id==='commande')?'flex':'none';
+  window.scrollTo({top:0,behavior:'instant'});
+  if(id==='commande'&&!bt49Shown){bt49Shown=true;openBt49Info();}
+}
+function openBt49Info(){
+  document.getElementById('bt49Modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeBt49Info(e){
+  if(e&&e.target!==document.getElementById('bt49Modal')) return;
+  document.getElementById('bt49Modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') closeBt49Info();
+});
+
+document.querySelectorAll('.tabbar button').forEach(b=>{
+  b.addEventListener('click',()=>goTab(b.dataset.tab));
+});
+// au chargement : on est sur Offres, donc la barre fixe est masquée
+document.addEventListener('DOMContentLoaded',()=>{document.querySelector('.bottombar').style.display='none';});
+</script>
+
+<script>
+
+const TVA_TUBE = 0.055, TVA_GOURDE = 0.20;
+const REMISE = 0.37;
+
+// ===== PÉRIODE PROMOTIONNELLE =====
+// "ete"      : Opération Été 2026 (tubes offerts)              — jusqu'au 31/08/2026 23:59:59
+// "flasques" : Opération Flasques (flasques + PLV de sol offerts) — du 01/09/2026 au 31/10/2026 23:59:59
+// "aucune"   : aucune opération commerciale active (après le 31/10/2026)
+const OP_ETE_FIN = new Date(2026,7,31,23,59,59);        // 31 août 2026
+const OP_FLASQUES_FIN = new Date(2026,9,31,23,59,59);   // 31 octobre 2026
+
+// 🔍 MODE APERÇU : ajoutez ?previewDate=2026-09-01 (ou toute autre date AAAA-MM-JJ) à la fin de
+// l'URL de la page pour voir instantanément ce qu'elle affichera à cette date, sans changer
+// l'horloge de votre ordinateur. Sans ce paramètre, la page utilise toujours la date du jour.
+const __previewDateParam = new URLSearchParams(window.location.search).get('previewDate');
+const NOW = __previewDateParam ? new Date(__previewDateParam+'T12:00:00') : new Date();
+if(__previewDateParam){
+  console.log('[Aperçu] Date simulée : '+NOW.toLocaleDateString('fr-FR')+' — retirez ?previewDate=... de l\'URL pour revenir à la date réelle.');
+}
+const PROMO_PERIOD = NOW <= OP_ETE_FIN ? 'ete' : (NOW <= OP_FLASQUES_FIN ? 'flasques' : 'aucune');
+
+if(__previewDateParam){
+  const previewBanner = document.createElement('div');
+  previewBanner.textContent = '🔍 APERÇU — page simulée au ' + NOW.toLocaleDateString('fr-FR') + ' (période : ' + PROMO_PERIOD + '). Retirez ?previewDate=... de l\'adresse pour revenir à la date réelle.';
+  previewBanner.style.cssText = 'position:sticky;top:0;z-index:999;background:#d83a3a;color:#fff;font-weight:800;font-size:.72rem;text-align:center;padding:8px 10px;line-height:1.4;';
+  document.body.prepend(previewBanner);
+}
+
+document.getElementById('offreVisualEte').style.display = PROMO_PERIOD==='ete' ? '' : 'none';
+document.getElementById('offreVisualFlasques').style.display = PROMO_PERIOD==='flasques' ? '' : 'none';
+document.getElementById('offreVisualAucune').style.display = PROMO_PERIOD==='aucune' ? '' : 'none';
+document.getElementById('promoEte').style.display = PROMO_PERIOD==='ete' ? '' : 'none';
+document.getElementById('promoFlasques').style.display = PROMO_PERIOD==='flasques' ? '' : 'none';
+
+// 🔧 Destinataire de la commande (ta boîte / service commandes)
+const DESTINATAIRE = "thomas.m@magnitude.fr";
+const MAILER_URL = "https://mailer.thomas-m-682.workers.dev";
+const FRANCO_MIN = 200;
+let ORDER_SENT = false;
+
+const COMMERCIAUX = {
+  // Stéphane Lefrand - Ouest
+  "14":"stephane.l@magnitude.fr",
+  "16":"stephane.l@magnitude.fr",
+  "17":"stephane.l@magnitude.fr",
+  "22":"stephane.l@magnitude.fr",
+  "27":"stephane.l@magnitude.fr",
+  "28":"stephane.l@magnitude.fr",
+  "29":"stephane.l@magnitude.fr",
+  "35":"stephane.l@magnitude.fr",
+  "36":"stephane.l@magnitude.fr",
+  "37":"stephane.l@magnitude.fr",
+  "41":"stephane.l@magnitude.fr",
+  "44":"stephane.l@magnitude.fr",
+  "45":"stephane.l@magnitude.fr",
+  "49":"stephane.l@magnitude.fr",
+  "50":"stephane.l@magnitude.fr",
+  "53":"stephane.l@magnitude.fr",
+  "56":"stephane.l@magnitude.fr",
+  "61":"stephane.l@magnitude.fr",
+  "72":"stephane.l@magnitude.fr",
+  "76":"stephane.l@magnitude.fr",
+  "85":"stephane.l@magnitude.fr",
+  "86":"stephane.l@magnitude.fr",
+
+  // Séverine
+  "75":"severine.v@magnitude.fr",
+  "02":"severine.v@magnitude.fr",
+  "08":"severine.v@magnitude.fr",
+  "10":"severine.v@magnitude.fr",
+  "51":"severine.v@magnitude.fr",
+  "52":"severine.v@magnitude.fr",
+  "54":"severine.v@magnitude.fr",
+  "55":"severine.v@magnitude.fr",
+  "57":"severine.v@magnitude.fr",
+  "59":"severine.v@magnitude.fr",
+  "60":"severine.v@magnitude.fr",
+  "62":"severine.v@magnitude.fr",
+  "67":"severine.v@magnitude.fr",
+  "68":"severine.v@magnitude.fr",
+  "77":"severine.v@magnitude.fr",
+  "78":"severine.v@magnitude.fr",
+  "80":"severine.v@magnitude.fr",
+  "88":"severine.v@magnitude.fr",
+  "89":"severine.v@magnitude.fr",
+  "91":"severine.v@magnitude.fr",
+  "92":"severine.v@magnitude.fr",
+  "93":"severine.v@magnitude.fr",
+  "94":"severine.v@magnitude.fr",
+  "95":"severine.v@magnitude.fr",
+
+  // Florian
+  "09":"florian.d@magnitude.fr",
+  "11":"florian.d@magnitude.fr",
+  "12":"florian.d@magnitude.fr",
+  "13":"florian.d@magnitude.fr",
+  "15":"florian.d@magnitude.fr",
+  "19":"florian.d@magnitude.fr",
+  "23":"florian.d@magnitude.fr",
+  "24":"florian.d@magnitude.fr",
+  "30":"florian.d@magnitude.fr",
+  "31":"florian.d@magnitude.fr",
+  "32":"florian.d@magnitude.fr",
+  "33":"florian.d@magnitude.fr",
+  "34":"florian.d@magnitude.fr",
+  "40":"florian.d@magnitude.fr",
+  "46":"florian.d@magnitude.fr",
+  "47":"florian.d@magnitude.fr",
+  "48":"florian.d@magnitude.fr",
+  "64":"florian.d@magnitude.fr",
+  "65":"florian.d@magnitude.fr",
+  "66":"florian.d@magnitude.fr",
+  "79":"florian.d@magnitude.fr",
+  "81":"florian.d@magnitude.fr",
+  "82":"florian.d@magnitude.fr",
+  "87":"florian.d@magnitude.fr",
+
+  // Yoann
+  "01":"yoann.p@magnitude.fr",
+  "2A":"yoann.p@magnitude.fr",
+  "2B":"yoann.p@magnitude.fr",
+  "20":"yoann.p@magnitude.fr",
+  "03":"yoann.p@magnitude.fr",
+  "04":"yoann.p@magnitude.fr",
+  "05":"yoann.p@magnitude.fr",
+  "06":"yoann.p@magnitude.fr",
+  "07":"yoann.p@magnitude.fr",
+  "18":"yoann.p@magnitude.fr",
+  "21":"yoann.p@magnitude.fr",
+  "25":"yoann.p@magnitude.fr",
+  "26":"yoann.p@magnitude.fr",
+  "38":"yoann.p@magnitude.fr",
+  "39":"yoann.p@magnitude.fr",
+  "42":"yoann.p@magnitude.fr",
+  "43":"yoann.p@magnitude.fr",
+  "58":"yoann.p@magnitude.fr",
+  "63":"yoann.p@magnitude.fr",
+  "69":"yoann.p@magnitude.fr",
+  "70":"yoann.p@magnitude.fr",
+  "71":"yoann.p@magnitude.fr",
+  "73":"yoann.p@magnitude.fr",
+  "74":"yoann.p@magnitude.fr",
+  "83":"yoann.p@magnitude.fr",
+  "84":"yoann.p@magnitude.fr",
+  "90":"yoann.p@magnitude.fr"
+};
+
+const NOMS = {
+  "stephane.l@magnitude.fr":"Stéphane Lefrand",
+  "severine.v@magnitude.fr":"Séverine V.",
+  "florian.d@magnitude.fr":"Florian D.",
+  "yoann.p@magnitude.fr":"Yoann P."
+};
+
+function deptFromCP(cp){cp=(cp||'').trim().toUpperCase();if(/^(2A|2B)/.test(cp))return cp.slice(0,2);return cp.slice(0,2);}
+
+// Données produits : tubes (display de 8) — base 9 € / display, PMC 9,90 €
+const TUBES = [
+  ["Pêche","TU_PEC_8","3760304100024","#ff9d6e"],
+  ["Fruits des bois","TU_FDB_8","3760304100000","#9c4bb0"],
+  ["Citron fleurs de sureau","TU_CIT_8","3760304100017","#e8d44a"],
+  ["Mangue passion","TU_20_MANGPA_8","3760304103452","#f5a623"],
+  ["Pastèque","TU_PASTQ_8","3760304101021","#ef5d6b"],
+  ["Neutre","TU_NEUT_8","3760304101120","#7fb4cc"],
+  ["Menthe","TU_20_MENTHE_8","3760304101670","#4cb89a"],
+  ["Ananas","TU_20_ANANAS_8","3760304101465","#f3c531"],
+  ["Kiwi","TU_20_KIWI_8","3760304101625","#86b93f"],
+  ["Coco","TU_COCO_8","3760304100819","#cdbfa8"],
+  ["Citronnelle gingembre","TU_GIN_8","3760304100291","#d4b94e"],
+  ["Miel citron","TU_MIEL20_8","3760304100949","#e0a93f"],
+  ["Pomme cannelle","TU_POMCAN_8","3760304101168","#c8694a"],
+];
+const PACK20 = ["Display de 20 tubes livré prérempli","PACK20_TU_MIX","3760304101229","#0a9bd4"];
+
+const GOURDES = [
+  ["Gourde isotherme bleue","GOU_BL500","3760304100468","#2f7fd1"],
+  ["Gourde isotherme verte","GOU_VR500","3760304101274","#3aa35f"],
+  ["Gourde isotherme noire","GOU_NR500","3760304100178","#2a2a2a"],
+  ["Gourde isotherme jaune","GOU_JN500","3760304100499","#e8c130"],
+  ["Gourde isotherme rouge","GOU_RG500","3760304100475","#d83a3a"],
+  ["Gourde isotherme noir chromé","GOU_NRMET500","3760304101755","#4a4a52"],
+  ["Gourde isotherme rose pastel","GOU_ROSE500","3760304101748","#eaa0c0"],
+  ["Gourde isotherme blanche","GOU_BC500","3760304100482","#d8dde0"],
+];
+
+
+// Tarifs (issus du BDC)
+const T_BASE=9, T_PMC=9.9;       // par display de 8 tubes
+const P20_BASE=180, P20_PMC=198; // display 20 tubes
+const G_BASE=15.1, G_PMC=19.9;   // gourde unitaire
+
+const fmt = n => n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const fmtPct = n => (n*100).toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1})+' %';
+
+// net net unitaire
+function netNet(base){ return base*(1-REMISE); }
+function marge(netnet,pmc){ return 1-(netnet/(pmc/1.055)); }
+function coeff(netnet,pmc){ return pmc/netnet; }
+
+const state = {}; // ref -> qty
+
+function makeProd(item, type){
+  const [name,ref,ean,color]=item;
+  state[ref]=0;
+  const base = type==='gourde'?G_BASE:(ref==='PACK20_TU_MIX'?P20_BASE:T_BASE);
+  const pmc  = type==='gourde'?G_PMC:(ref==='PACK20_TU_MIX'?P20_PMC:T_PMC);
+  const unit = ref==='PACK20_TU_MIX'?20:(type==='gourde'?1:8);
+  const nn = netNet(base);
+  const img = `Images/${ref}.webp`;
+  const short = name.replace(/Gourde isotherme /,'').split(' ').slice(0,2).join(' ');
+  const thumb =
+  `<img src="${img}" alt="${name}"
+    onclick="openImage(this.src)"
+    style="cursor:pointer"
+    onerror="this.parentNode.innerHTML='<span class=&quot;ph&quot;>${short}</span>';this.parentNode.style.background='${color}'">`;
+  const el=document.createElement('div');
+  el.className='prod';el.dataset.ref=ref;el.dataset.nn=nn;el.dataset.pmc=pmc;
+  el.innerHTML=`
+    <div class="prod-top">
+      <div class="prod-main">
+        <div class="prod-thumb" style="background:${img?'#faf7f0':color}">${thumb}</div>
+        <div class="prod-info">
+          <div class="prod-name">${name}</div>
+          <div class="prod-ref">${ref}</div>
+          <div class="prod-ean">EAN ${ean} · ${type==='gourde'?'qté en unités':(ref==='PACK20_TU_MIX'?'qté en displays de 20':'qté en displays de 8')}</div>
+          <div class="prod-kpi">
+            <span class="kpi"><b>PA</b> ${fmt(nn)}<i>HT${type==='gourde'?'':(ref==='PACK20_TU_MIX'?'/disp.':'/tube')}</i></span>
+            <span class="kpi"><b>PV</b> ${fmt(pmc)}<i>TTC</i></span>
+            <span class="kpi marge" data-marge-ref="${ref}" data-marge-base="${marge(nn,pmc)}" data-type="${type}"><b>Marge</b> <span class="marge-val">${fmtPct(marge(nn,pmc))}</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="qty">
+        <button data-act="minus">−</button>
+        <input type="number" inputmode="numeric" value="0" min="0" data-ref="${ref}">
+        <button data-act="plus">+</button>
+      </div>
+    </div>
+    <div class="line-total">
+      <span class="lt-lbl">Total HT ligne</span>
+      <span class="lt-val" data-linetotal="${ref}">${fmt(0)}</span>
+    </div>
+    <div class="prod-toggle-bar"><span class="tb-arrow">▾</span> Détails prix</div>
+    <div class="prod-detail">
+      <div class="detail-grid">
+        <span class="dl">Base HT ${type==='gourde'?'/ unité':(ref==='PACK20_TU_MIX'?'/ display':'/ tube')}</span><span class="dv">${fmt(base)}</span>
+        <span class="dl">Remise 37 %</span><span class="dv">${fmt(base-base*REMISE)}</span>
+        <span class="dl">Tarif net HT</span><span class="dv">${fmt(nn)}</span>
+        <span class="dl tier-pa-lbl" style="display:none">PA effectif / ${ref==='PACK20_TU_MIX'?'display':'tube'} (palier)</span><span class="dv tier-pa-val" style="display:none"></span>
+        <span class="dl">PMC TTC</span><span class="dv">${fmt(pmc)}</span>
+        <span class="dl">Marge</span><span class="dv tier-marge-val">${fmtPct(marge(nn,pmc))}</span>
+        <span class="dl">Coeff</span><span class="dv tier-coeff-val">${coeff(nn,pmc).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
+      </div>
+    </div>`;
+  el.querySelectorAll('.qty button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const inp=el.querySelector('input');
+      let v=parseInt(inp.value)||0;
+      v = b.dataset.act==='plus'?v+1:Math.max(0,v-1);
+      inp.value=v;updateQty(ref,v,el);
+    });
+  });
+  el.querySelector('input').addEventListener('input',e=>{
+    let v=Math.max(0,parseInt(e.target.value)||0);updateQty(ref,v,el);
+  });
+  el.querySelector('.prod-toggle-bar').addEventListener('click',()=>{
+    el.classList.toggle('open');
+  });
+  return el;
+}
+
+function updateQty(ref,v,el){
+  state[ref]=v;
+  el.classList.toggle('active',v>0);
+  if(v===0) el.classList.remove('open');
+  recompute();
+}
+
+// Construction listes
+const lt=document.getElementById('list-tubes');
+TUBES.forEach(t=>lt.appendChild(makeProd(t,'tube')));
+const lg=document.getElementById('list-gourdes');
+GOURDES.forEach(g=>lg.appendChild(makeProd(g,'gourde')));
+const lp=document.getElementById('list-pack20');
+lp.appendChild(makeProd(PACK20,'tube'));
+
+function freeDisplays(n){
+  if(PROMO_PERIOD !== 'ete') return 0; // offre "tubes offerts" active uniquement pendant l'Opération Été 2026
+  return n >= 16 ? 2 :
+         n >= 9 ? 1 : 0;
+}
+function freeFlasques(n){
+  if(PROMO_PERIOD !== 'flasques') return 0; // offre "flasques offertes" active uniquement pendant l'Opération Flasques
+  return n >= 16 ? 20 :
+         n >= 9 ? 10 : 0;
+}
+
+function recompute(){
+  const nnTube = netNet(T_BASE);   // 5,4999 € / display de 8 (base par display)
+  const nnP20  = netNet(P20_BASE); // 109,998 € / display de 20
+  const nnGour = netNet(G_BASE);   // 9,22761 € / gourde
+
+  // displays de 8 uniquement
+  let nbDisplays8=0, sousTotalTubes=0, nbTubes=0;
+  TUBES.forEach(([n,ref])=>{
+    const q=state[ref]||0;
+    nbDisplays8+=q;
+    nbTubes+=q*8;
+    sousTotalTubes += nnTube*(q*8); // netnet par tube * (nb displays * 8 tubes)
+    document.querySelector(`[data-linetotal="${ref}"]`).textContent=fmt(nnTube*(q*8));
+  });
+  // pack 20 prérempli — catégorie séparée
+  const q20=state['PACK20_TU_MIX']||0;
+  const p20Total=nnP20*q20;
+  document.querySelector('[data-linetotal="PACK20_TU_MIX"]').textContent=fmt(p20Total);
+
+  // total displays pour calcul gratuit (displays 8 + pack 20)
+  const totalDisplaysCmd = nbDisplays8 + q20;
+  const free = freeDisplays(totalDisplaysCmd);
+
+  // remise gratuit au prix net-net
+  const remiseGratuit = free * 8 * nnTube;
+  const sousTotalHT = sousTotalTubes;
+  const totalHTtubes = sousTotalHT - remiseGratuit;
+
+  // PA effectif / tube commandé = ce qu'on paie réellement / tubes commandés
+  const paEffGlobal = nbDisplays8>0 ? totalHTtubes/(nbDisplays8*8) : nnTube;
+
+  // MAJ totaux de ligne avec PA effectif
+  TUBES.forEach(([n,ref])=>{
+    const q=state[ref]||0;
+    document.querySelector(`[data-linetotal="${ref}"]`).textContent=fmt(q*8*paEffGlobal);
+  });
+
+  // gourdes
+  let nbGourdes=0, totalGourdes=0;
+  GOURDES.forEach(([n,ref])=>{
+    const q=state[ref]||0;nbGourdes+=q;
+    const lineHT=nnGour*q;totalGourdes+=lineHT;
+    document.querySelector(`[data-linetotal="${ref}"]`).textContent=fmt(lineHT);
+  });
+
+  // flasques (TVA 20%)
+  const freeFlGranted = freeFlasques(totalDisplaysCmd); // flasques offertes par le palier atteint (0 hors Opération Flasques)
+  const requiredFlLots = Math.ceil(freeFlGranted/10);
+  if(flasqueLots < requiredFlLots){
+    // ajout automatique des lots offerts dans le panier dès que le palier est atteint
+    flasqueLots = requiredFlLots;
+    const flQtyInput = document.getElementById('fl-qty');
+    if(flQtyInput) flQtyInput.value = flasqueLots;
+  }
+  const flLots = flasqueLots;
+  const flNbUnites = flLots*10;
+  const freeFl = Math.min(freeFlGranted, flNbUnites); // plafonnées à la quantité présente dans le panier
+  const flTotalHT = (flNbUnites - freeFl)*FLASQUE_PA;
+  document.getElementById('fl-total').textContent = fmt(flTotalHT);
+
+  const totalHT = totalHTtubes + p20Total + totalGourdes + flTotalHT;
+  const tva55 = (totalHTtubes + p20Total)*TVA_TUBE;
+  const tva20 = (totalGourdes + flTotalHT)*TVA_GOURDE;
+  const ttc = totalHT + tva55 + tva20;
+
+  // MAJ récap
+  set('r_nbtubes',nbDisplays8>0?nbDisplays8+' display'+(nbDisplays8>1?'s':'')+' ('+nbTubes+' tubes)':'0');
+  set('r_gratuit',free>0?free+' display'+(free>1?'s':'')+' ('+(free*8)+' tubes)':'—');
+  set('r_httubes',fmt(totalHTtubes));
+  set('r_nbpack20',q20);
+  set('r_htpack20',fmt(p20Total));
+  set('r_nbgourdes',nbGourdes);
+  set('r_htgourdes',fmt(totalGourdes));
+  set('r_nbflasques',flNbUnites);
+  set('r_htflasques',fmt(flTotalHT));
+  document.getElementById('r_flgratuit_row').style.display = freeFl>0 ? '' : 'none';
+  set('r_flgratuit',freeFl);
+  set('r_totalht',fmt(totalHT));
+  set('r_tva55',fmt(tva55));
+  set('r_tva20',fmt(tva20));
+  set('g_ht',fmt(totalHT)+' HT');
+  set('g_ttc',fmt(ttc));
+  set('bb_ttc',fmt(ttc));
+
+  // gratuit banner (Opération Été)
+  set('gc_count',totalDisplaysCmd);
+  set('gc_free',free);
+  // gratuit banner (Opération Flasques)
+  set('gc_count_fl',totalDisplaysCmd);
+  set('gc_freefl',freeFl);
+  document.querySelectorAll('.gift-tier').forEach(t=>{
+    t.classList.toggle('hit',totalDisplaysCmd>=parseInt(t.dataset.tier));
+  });
+
+  // note PLV de sol selon la période promotionnelle et le palier atteint
+  const plvSolNote = document.getElementById('plvSolNote');
+  if(plvSolNote){
+    if(PROMO_PERIOD==='flasques'){
+      if(totalDisplaysCmd>=9) plvSolNote.textContent = '✅ 1 PLV de sol offerte (9 packs atteints)';
+      else plvSolNote.textContent = '⚠️ 1 PLV de sol offerte dès 9 packs (72 tubes) commandés';
+    } else {
+      plvSolNote.textContent = "⚠️ Sous réserve d'avoir déjà commandé au minimum 144 tubes";
+    }
+  }
+
+  // marge dynamique sur les tuiles produit (tubes) selon le palier de gratuit atteint
+  document.querySelectorAll('.kpi.marge').forEach(el=>{
+    if(!el.dataset.margeBase) return; // ignore la flasque (marge fixe)
+    const mBase = parseFloat(el.dataset.margeBase);
+    const t = el.dataset.type;
+    const valEl = el.querySelector('.marge-val');
+    if(t==='gourde'){
+      valEl.textContent = fmtPct(mBase); // pas de gratuit sur gourdes
+      return;
+    }
+    // marge réelle = 1 - PA_moyen/PV_HT ; PA_moyen = PA_base / ratioLivre
+    // PA_base/PV_HT = 1 - mBase  => PA_moyen/PV_HT = (1-mBase)/ratioLivre
+    const isTube8 = el.dataset.margeRef !== 'PACK20_TU_MIX';
+    const factor = (free>0 && nbDisplays8>0 && isTube8) ? (nbDisplays8-free)/nbDisplays8 : 1;
+    const mReelle = 1 - (1-mBase)*factor;
+    if(factor<1){
+      valEl.textContent = fmtPct(mReelle);
+      el.classList.add('boosted');
+    } else {
+      valEl.textContent = fmtPct(mBase);
+      el.classList.remove('boosted');
+    }
+  });
+
+  // PA effectif dans le détail selon palier (tube-8 uniquement)
+  document.querySelectorAll('.prod[data-nn]').forEach(card=>{
+    const ctype=card.querySelector('[data-type]')?.dataset.type;
+    if(ctype==='gourde') return;
+    if(card.dataset.ref==='PACK20_TU_MIX') return;
+    const cnn=parseFloat(card.dataset.nn), cpmc=parseFloat(card.dataset.pmc);
+    const paLbl=card.querySelector('.tier-pa-lbl');
+    const paVal=card.querySelector('.tier-pa-val');
+    const margeEl=card.querySelector('.tier-marge-val');
+    const coeffEl=card.querySelector('.tier-coeff-val');
+    if(!paLbl) return;
+    if(free>0 && nbDisplays8>0){
+      paLbl.style.display=''; paVal.style.display='';
+      paVal.textContent=fmt(paEffGlobal);
+      margeEl.textContent=fmtPct(marge(paEffGlobal,cpmc));
+      coeffEl.textContent=coeff(paEffGlobal,cpmc).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    } else {
+      paLbl.style.display='none'; paVal.style.display='none';
+      margeEl.textContent=fmtPct(marge(cnn,cpmc));
+      coeffEl.textContent=coeff(cnn,cpmc).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    }
+  });
+
+  // bouton
+  const btn=document.getElementById('bb_btn');
+  if(ORDER_SENT){
+    btn.classList.add('disabled');
+    btn.disabled = true;
+  } else if(ttc>0){
+    btn.classList.remove('disabled');
+    btn.disabled = false;
+  } else {
+    btn.classList.add('disabled');
+    btn.disabled = true;
+  }
+
+  // état courant pour le mail
+  window.ORDER = {nbTubes,free,sousTotalHT,totalHTtubes,q20,p20Total,nbGourdes,totalGourdes,totalHT,tva55,tva20,ttc,totalDisplaysCmd,flLots,flNbUnites,flTotalHT,flFree:freeFl};
+
+  // flasque (après ORDER car dépend de totalDisplaysCmd)
+  if(typeof updateFlasque==='function') updateFlasque();
+}
+function set(id,v){document.getElementById(id).textContent=v}
+
+function commercialFor(cp){return COMMERCIAUX[deptFromCP(cp)]||null;}
+function routeSecteur(){
+  const cp=document.getElementById('c_cp').value;
+  const info=document.getElementById('secteur-info');
+  if(cp.length<2){info.className='secteur-info';info.textContent='Renseignez le code postal pour adresser la commande au bon commercial.';return;}
+  const email=commercialFor(cp);
+  if(email){info.className='secteur-info ok';info.textContent='Commande adressée à '+NOMS[email]+' ('+email+'), avec copie au service commandes.';}
+  else{info.className='secteur-info warn';info.textContent='Département non reconnu — commande envoyée au service commandes uniquement.';}
+}
+var _cpTimer;
+function cpInput(){
+  routeSecteur();
+  var val=document.getElementById('c_cp').value.trim();
+  var drop=document.getElementById('cp-drop');
+  clearTimeout(_cpTimer);
+  if(val.length<2){drop.innerHTML='';drop.classList.remove('open');return;}
+  _cpTimer=setTimeout(function(){
+    fetch('https://api-adresse.data.gouv.fr/search/?q='+encodeURIComponent(val)+'&type=municipality&limit=10&autocomplete=1')
+      .then(function(r){return r.json();})
+      .then(function(data){
+        var feats=data&&data.features;
+        if(!feats||!feats.length){drop.innerHTML='';drop.classList.remove('open');return;}
+        drop.innerHTML=feats.map(function(f){
+          var cp=f.properties.postcode||'';
+          var ville=(f.properties.name||f.properties.city||'').replace(/'/g,'&#39;');
+          var cpSafe=cp.replace(/'/g,'&#39;');
+          return '<div class="cp-opt" tabindex="0" onmousedown="selectCP(\''+cpSafe+'\',\''+ville+'\')">'
+            +'<b>'+cp+'</b><span>'+f.properties.name+'</span></div>';
+        }).join('');
+        drop.classList.add('open');
+      })
+      .catch(function(){drop.innerHTML='';drop.classList.remove('open');});
+  },280);
+}
+function selectCP(cp,ville){
+  document.getElementById('c_cp').value=cp;
+  document.getElementById('c_ville').value=ville;
+  document.getElementById('cp-drop').classList.remove('open');
+  routeSecteur();
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.cp-wrap'))document.getElementById('cp-drop').classList.remove('open');
+});
+
+document.getElementById('bb_btn').addEventListener('click',function(){
+  if(ORDER_SENT || this.classList.contains('disabled'))return;
+  const o = window.ORDER;
+  if(o.totalHT<FRANCO_MIN){
+    const cpEarly=document.getElementById('c_cp').value.trim();
+    const contactEmail=COMMERCIAUX[deptFromCP(cpEarly)]||DESTINATAIRE;
+    alert('Le franco de port est fixé à '+FRANCO_MIN+' € HT. Merci d\'ajouter des produits pour atteindre ce montant avant d\'envoyer la commande.\n\nEn cas de question, merci d\'écrire à votre responsable commercial : '+contactEmail);
+    return;
+  }
+  const v = id => document.getElementById(id).value.trim();
+  const nom = v('c_name');
+  const ville = v('c_ville');
+  const cp = v('c_cp');
+  if(!nom){
+    alert("Merci de renseigner le nom du point de vente.");
+    document.getElementById('c_nom').focus();
+    return;
+  }
+  if(!cp){
+    alert("Merci de renseigner le code postal.");
+    document.getElementById('c_cp').focus();
+    return;
+  }
+  const client = nom + (ville ? ` — ${ville}` : '') + (cp ? ` (${cp})` : '');
+
+  // Lignes commandées
+  let lignes = [];
+  TUBES.forEach(([name,ref])=>{
+    const q = state[ref]||0;
+    if(q>0) lignes.push(`  • ${name} : ${q} display${q>1?'s':''}`);
+  });
+  let lignesG = [];
+  GOURDES.forEach(([name,ref])=>{
+    const q = state[ref]||0;
+    if(q>0) lignesG.push(`  • ${name} : ${q}`);
+  });
+  const q20line = state['PACK20_TU_MIX']||0;
+
+  const opLigne = PROMO_PERIOD==='ete'
+    ? "Opération Été 2026 (offre valable du 01/07/2026 au 31/08/2026)"
+    : PROMO_PERIOD==='flasques'
+      ? "Opération Flasques (offre valable du 01/09/2026 au 31/10/2026)"
+      : "Hydratis";
+  const corps =
+`BON DE COMMANDE — HYDRATIS
+${opLigne}
+
+CLIENT
+  Point de vente : ${nom}
+  Ville : ${ville||'-'}
+  Code postal : ${cp||'-'}
+${v('c_bt49')?`  Code BT-49 : ${v('c_bt49')}\n`:''}  Contact : ${v('c_contact')||'-'}
+  Email : ${v('c_email')||'-'}
+${v('c_notes')?`  Notes : ${v('c_notes')}\n`:''}
+────────────────────────────────
+💧 DISPLAYS 8 TUBES 💧
+${[o.free > 0 ? `🆓 ${o.free} DISPLAY(S) OFFERT(S) 🆓` : null, lignes.length ? lignes.join('\n') : '  (aucun)'].filter(Boolean).join('\n')}
+Nb total de tubes : ${o.nbTubes}
+${q20line>0?`
+────────────────────────────────
+📦DISPLAY 20 TUBES PRÉREMPLI📦
+  • DISPLAY DE 20 TUBES : ${q20line}
+`:''}
+────────────────────────────────
+🥤GOURDES🥤
+${lignesG.length?lignesG.join('\n'):'  (aucune)'}
+  Nb de gourdes : ${o.nbGourdes}
+${o.flNbUnites>0?`
+────────────────────────────────
+🧃FLASQUES (offre PCB de 10)🧃
+  • Flasques souples : ${o.flLots} lot(s) de 10 = ${o.flNbUnites} unités${o.flFree>0?` (dont ${o.flFree} offerte${o.flFree>1?'s':''})`:''}
+`:''}
+────────────────────────────────
+📢MATÉRIELS PLV📢
+${PLV_REFS.map(r=>{ const q=getPlvQty(r); return q>0?`  • ${PLV_NOMS[r]} : ${q}`:null; }).filter(Boolean).join('\n')||'  (aucun)'}
+
+TOTAUX
+  Total HT tubes : ${fmt(o.totalHTtubes)}${o.free>0?` (dont ${o.free} display${o.free>1?'s':''} offert${o.free>1?'s':''})`:''}${o.q20>0?`
+  Total HT display 20 : ${fmt(o.p20Total)}`:''}
+  Total HT gourdes : ${fmt(o.totalGourdes)}${o.flNbUnites>0?`
+  Total HT flasques : ${fmt(o.flTotalHT)}`:''}
+  Total HT : ${fmt(o.totalHT)}
+  TVA 5,5% : ${fmt(o.tva55)}
+  TVA 20% : ${fmt(o.tva20)}
+  TOTAL TTC : ${fmt(o.ttc)}
+
+
+Commande passée depuis le bon de commande en ligne Hydratis.`;
+
+const dateJour = new Date().toLocaleDateString('fr-FR');
+const objet = `Commande Hydratis BtoB — ${client}${cp?` (${cp})`:''} — ${dateJour}`;
+
+const dept = deptFromCP(cp);
+const emailCommercial = COMMERCIAUX[dept] || DESTINATAIRE;
+const emailClient = v('c_email');
+const intro='Bonjour,\n\nMerci pour votre commande.\n\nVotre demande a bien été transmise. Notre équipe commerciale la traitera dans les meilleurs délais.\n\nVous trouverez ci-dessous le récapitulatif de votre commande.\n\n';
+const outro='\n\nCet e-mail est généré automatiquement.\nMerci de ne pas y répondre.\n\nPour toute question concernant votre commande, contactez votre commercial : '+emailCommercial+'\n';
+
+const emailBody = intro+corps+outro;
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+let emailHtml = '<pre style="font-family:inherit;white-space:pre-wrap;margin:0">'+escHtml(emailBody)+'</pre>';
+const bt49Val = v('c_bt49');
+if(bt49Val) emailHtml = emailHtml.replace('Code BT-49 : '+escHtml(bt49Val),'<strong style="color:#e11d2e">Code BT-49 : '+escHtml(bt49Val)+'</strong>');
+
+const btn = this;
+const label = btn.textContent;
+btn.classList.add('disabled');
+btn.textContent = 'Envoi en cours…';
+fetch(MAILER_URL,{
+  method:'POST',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({to:DESTINATAIRE,cc:[emailCommercial,emailClient].filter(Boolean),subject:objet,body:emailBody,html:emailHtml,replyTo:emailClient||undefined})
+}).then(res=>{
+  if(!res.ok)throw new Error('send failed');
+  return res.json();
+}).then(data=>{
+  if(!data.ok)throw new Error(data.error||'send failed');
+  ORDER_SENT = true;
+  alert('Commande envoyée avec succès !');
+  btn.textContent = '✓ Commande envoyée';
+  btn.classList.add('disabled');
+  btn.disabled = true;
+}).catch(()=>{
+  alert("Erreur lors de l'envoi de la commande. Merci de réessayer ou de contacter votre commercial.");
+  btn.textContent = label;
+  recompute();
+});
+
+});
+
+// ===== PLV =====
+const PLV_REFS = ['PLV_COMPTOIR_20TU','PLV_SOL','PLV_STOP_RAYON','PLV_CHEVALET_A5','PLV_SUPPORT_FLYER_A6','PLV_FLYER_A6','PLV_MACA_PEC'];
+const PLV_NOMS = {
+  'PLV_COMPTOIR_20TU':'Présentoir de comptoir vide',
+  'PLV_SOL':'PLV de sol',
+  'PLV_STOP_RAYON':'Stop rayon',
+  'PLV_CHEVALET_A5':'Chevalet de table A5',
+  'PLV_SUPPORT_FLYER_A6':'Support flyers A6',
+  'PLV_FLYER_A6':'Lot de 100 flyers A6',
+  'PLV_MACA_PEC':'Sticker macaron vitrine'
+};
+function getPlvQty(ref){ return parseInt(document.querySelector(`.plv-qty[data-plv="${ref}"]`)?.value||0)||0; }
+function updatePlvRecap(){
+  const wrap=document.getElementById('r_plv_list');
+  if(!wrap)return;
+  const lines=PLV_REFS.map(r=>{
+    const q=getPlvQty(r);
+    return q>0?`<div class="rline"><span class="rl-lbl">${PLV_NOMS[r]}</span><span class="rl-val">${q}</span></div>`:null;
+  }).filter(Boolean);
+  wrap.innerHTML=lines.length?lines.join(''):'<div class="rline"><span class="rl-lbl" style="color:var(--gris);font-style:italic;">Aucun matériel sélectionné</span></div>';
+}
+document.querySelectorAll('[data-plv]').forEach(el=>{
+  el.addEventListener(el.tagName==='INPUT'?'input':'click', function(){
+    const ref=this.dataset.plv;
+    const inp=document.querySelector(`.plv-qty[data-plv="${ref}"]`);
+    if(this.tagName==='BUTTON'){
+      const act=this.dataset.act;
+      const v=parseInt(inp.value||0)||0;
+      inp.value = Math.max(0, act==='plus'?v+1:v-1);
+    }
+    updatePlvRecap();
+  });
+});
+
+// ===== FLASQUE =====
+const FLASQUE_PA = 5.99;   // PA HT par flasque
+let flasqueLots = 0; // nombre de lots de 10
+
+function flasqueUnlocked(){
+  return true;
+}
+function flasqueQty(){ return flasqueLots*10; }
+function flasqueTotalHT(){ return flasqueLots*10*FLASQUE_PA; }
+
+function updateFlasque(){
+  const card = document.getElementById('flasque-card');
+  card.classList.toggle('active', flasqueLots>0);
+  if(flasqueLots===0) card.classList.remove('open');
+  // le total (fl-total) est déjà mis à jour dans recompute() en tenant compte des flasques offertes
+}
+
+(function initFlasque(){
+  const input = document.getElementById('fl-qty');
+  document.getElementById('fl-minus').addEventListener('click',()=>{
+    flasqueLots = Math.max(0, flasqueLots-1); input.value = flasqueLots; recompute();
+  });
+  document.getElementById('fl-plus').addEventListener('click',()=>{
+    flasqueLots = flasqueLots+1; input.value = flasqueLots; recompute();
+  });
+  input.addEventListener('input',e=>{
+    flasqueLots = Math.max(0, parseInt(e.target.value)||0); recompute();
+  });
+  document.getElementById('flasque-card').querySelector('.prod-toggle-bar').addEventListener('click',function(){
+    document.getElementById('flasque-card').classList.toggle('open');
+  });
+})();
+
+
+recompute();
+
+</script>
+
+<!-- BT-49 INFO MODAL -->
+<div class="bt49-modal" id="bt49Modal" onclick="closeBt49Info(event)">
+  <div class="bt49-card" onclick="event.stopPropagation()">
+    <button class="bt49-close" onclick="closeBt49Info()">&times;</button>
+    <img src="Images/BT%2049.png" alt="Facturation électronique : le code BT-49 sera indispensable à partir du 1er septembre 2026 pour le routage de vos factures électroniques.">
+  </div>
+</div>
+
+<div id="imageModal" class="modal" onclick="closeImage()">
+    <img id="modalImg">
+</div>
+
+<script>
+function openImage(src){
+    document.getElementById('modalImg').src = src;
+    document.getElementById('imageModal').style.display = 'flex';
+}
+
+function closeImage(){
+    document.getElementById('imageModal').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
