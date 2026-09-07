@@ -971,12 +971,14 @@
 
 <script>
 let bt49Shown=false;
+let cherryShown=false;
 function goTab(id){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+id));
   document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
   document.querySelector('.bottombar').style.display = (id==='commande')?'flex':'none';
   window.scrollTo({top:0,behavior:'instant'});
   if(id==='commande'&&!bt49Shown){bt49Shown=true;openBt49Info();}
+  if(id==='offres'&&!cherryShown){cherryShown=true;openCherryVideo();}
 }
 function openBt49Info(){
   document.getElementById('bt49Modal').classList.add('open');
@@ -987,15 +989,31 @@ function closeBt49Info(e){
   document.getElementById('bt49Modal').classList.remove('open');
   document.body.style.overflow='';
 }
+function openCherryVideo(){
+  document.getElementById('cherryModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  const v=document.getElementById('cherryVideoEl');
+  if(v){ v.currentTime=0; v.play().catch(()=>{}); }
+}
+function closeCherryVideo(e){
+  if(e&&e.target!==document.getElementById('cherryModal')) return;
+  document.getElementById('cherryModal').classList.remove('open');
+  document.body.style.overflow='';
+  const v=document.getElementById('cherryVideoEl');
+  if(v) v.pause();
+}
 document.addEventListener('keydown',function(e){
-  if(e.key==='Escape') closeBt49Info();
+  if(e.key==='Escape'){ closeBt49Info(); closeCherryVideo(); }
 });
 
 document.querySelectorAll('.tabbar button').forEach(b=>{
   b.addEventListener('click',()=>goTab(b.dataset.tab));
 });
 // au chargement : on est sur Offres, donc la barre fixe est masquée
-document.addEventListener('DOMContentLoaded',()=>{document.querySelector('.bottombar').style.display='none';});
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelector('.bottombar').style.display='none';
+  if(!cherryShown){cherryShown=true;openCherryVideo();}
+});
 </script>
 
 <script>
@@ -1157,6 +1175,7 @@ function deptFromCP(cp){cp=(cp||'').trim().toUpperCase();if(/^(2A|2B)/.test(cp))
 
 // Données produits : tubes (display de 8) — base 9 € / display, PMC 9,90 €
 const TUBES = [
+  ["Cherry","TU_20_CHERRY_8","3760304103957","#c41e3a",true],
   ["Pêche","TU_PEC_8","3760304100024","#ff9d6e"],
   ["Fruits des bois","TU_FDB_8","3760304100000","#9c4bb0"],
   ["Citron fleurs de sureau","TU_CIT_8","3760304100017","#e8d44a"],
@@ -1168,8 +1187,6 @@ const TUBES = [
   ["Kiwi","TU_20_KIWI_8","3760304101625","#86b93f"],
   ["Coco","TU_COCO_8","3760304100819","#cdbfa8"],
   ["Citronnelle gingembre","TU_GIN_8","3760304100291","#d4b94e"],
-  ["Miel citron","TU_MIEL20_8","3760304100949","#e0a93f"],
-  ["Pomme cannelle","TU_POMCAN_8","3760304101168","#c8694a"],
 ];
 const PACK20 = ["Display de 20 tubes livré prérempli","PACK20_TU_MIX","3760304101229","#0a9bd4"];
 
@@ -1201,7 +1218,7 @@ function coeff(netnet,pmc){ return pmc/netnet; }
 const state = {}; // ref -> qty
 
 function makeProd(item, type){
-  const [name,ref,ean,color]=item;
+  const [name,ref,ean,color,isNew]=item;
   state[ref]=0;
   const base = type==='gourde'?G_BASE:(ref==='PACK20_TU_MIX'?P20_BASE:T_BASE);
   const pmc  = type==='gourde'?G_PMC:(ref==='PACK20_TU_MIX'?P20_PMC:T_PMC);
@@ -1221,7 +1238,7 @@ function makeProd(item, type){
       <div class="prod-main">
         <div class="prod-thumb" style="background:${img?'#faf7f0':color}">${thumb}</div>
         <div class="prod-info">
-          <div class="prod-name">${name}</div>
+          <div class="prod-name">${isNew?'<span style="display:inline-block;background:var(--eau);color:#fff;font-size:.65rem;font-weight:800;border-radius:5px;padding:2px 8px;vertical-align:middle;margin-right:6px;">NOUVEAU</span>':''}${name}</div>
           <div class="prod-ref">${ref}</div>
           <div class="prod-ean">EAN ${ean} · ${type==='gourde'?'qté en unités':(ref==='PACK20_TU_MIX'?'qté en displays de 20':'qté en displays de 8')}</div>
           <div class="prod-kpi">
@@ -1720,6 +1737,21 @@ recompute();
   <div class="bt49-card" onclick="event.stopPropagation()">
     <button class="bt49-close" onclick="closeBt49Info()">&times;</button>
     <img src="Images/BT%2049.png" alt="Facturation électronique : le code BT-49 sera indispensable à partir du 1er septembre 2026 pour le routage de vos factures électroniques.">
+  </div>
+</div>
+
+<!-- CHERRY VIDEO MODAL -->
+<div class="bt49-modal" id="cherryModal" onclick="closeCherryVideo(event)">
+  <div class="bt49-card" onclick="event.stopPropagation()">
+    <button class="bt49-close" onclick="closeCherryVideo()">&times;</button>
+    <div style="padding:14px 14px 0;display:flex;align-items:center;gap:8px;">
+      <span style="display:inline-block;background:var(--eau);color:#fff;font-size:.7rem;font-weight:800;border-radius:5px;padding:3px 10px;letter-spacing:.4px;">NOUVEAU</span>
+      <span style="font-weight:800;font-size:.95rem;color:var(--encre);">Découvrez la saveur Cherry</span>
+    </div>
+    <video id="cherryVideoEl" controls muted playsinline style="width:100%;height:auto;max-height:70vh;display:block;margin-top:12px;background:#000;">
+      <source src="Ressources/Cherry.mp4" type="video/mp4">
+      Votre navigateur ne supporte pas la lecture vidéo.
+    </video>
   </div>
 </div>
 
