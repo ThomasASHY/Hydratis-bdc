@@ -1089,6 +1089,10 @@ function applyCsMode(){
   document.querySelectorAll('.cs-opt').forEach(b=>b.classList.toggle('active', b.dataset.csmode===CS_MODE));
 }
 if(MODE_CS){
+  // Commerciaux : uniquement le bon de commande (Actualités / Ressources et fenêtres d'accueil réservées aux clients)
+  cherryShown = true; bt49Shown = true;
+  document.querySelector('.tabbar').style.display = 'none';
+  document.addEventListener('DOMContentLoaded', () => goTab('commande'));
   document.getElementById('csPanel').style.display = '';
   document.querySelectorAll('.cs-opt').forEach(b=>b.addEventListener('click',()=>{ CS_MODE = b.dataset.csmode; applyCsMode(); }));
   applyCsMode();
