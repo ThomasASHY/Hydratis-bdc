@@ -233,13 +233,11 @@
   .ggrow > span:first-child{justify-content:flex-start;font-weight:700}
   .ggrow > span.gg-mg{font-weight:800;color:var(--vert);justify-content:flex-end;padding-right:2px}
   .ggrow:last-child > span{border-bottom:none}
-  .ggrow.max > span{background:rgba(232,163,44,.20);color:#8a5e00;font-weight:800}
-  .ggrow.max > span.gg-mg{color:#b5740a}
-  .ggrow.max > span:first-child::before{content:""}
-  .ggrow.hit > span{background:rgba(19,138,82,.16);font-weight:800}
-  .ggrow.hit.max > span{background:var(--vert);color:#fff;font-weight:800;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
-  .ggrow.hit.max > span.gg-mg{color:#fff}
-  .ggrow.hit.max > span:first-child::before{content:"✅ "}
+  /* Paliers : clair tant que non atteint, vert plein une fois atteint (même logique pour tous) */
+  .ggrow > span{background:#fff}
+  .ggrow.hit > span{background:var(--vert);color:#fff;font-weight:800;border-bottom-color:rgba(255,255,255,.25)}
+  .ggrow.hit > span.gg-mg{color:#fff}
+  .ggrow.hit > span:first-child::before{content:"✅ "}
   .gift-current{
     margin-top:10px;padding-top:10px;border-top:1px solid #bce6cf;
     display:flex;justify-content:space-between;align-items:center;
@@ -482,6 +480,14 @@
   .cp-opt:hover,.cp-opt:focus{background:var(--eau-clair);outline:none}
   .cp-opt b{color:var(--eau-fonce);font-weight:700;min-width:48px}
 
+  /* MODE COMMERCIAL (?modecs) */
+  .cs-panel{margin:14px 16px 0;padding:12px 14px;border:1.5px solid var(--eau);border-radius:12px;background:var(--eau-clair)}
+  .cs-panel-title{font-size:.72rem;font-weight:800;color:var(--eau-fonce);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px}
+  .cs-options{display:flex;gap:8px;flex-wrap:wrap}
+  .cs-opt{flex:1 1 140px;border:1.5px solid var(--ligne);background:#fff;color:var(--encre);border-radius:10px;padding:10px 12px;font:inherit;font-size:.84rem;font-weight:700;cursor:pointer;text-align:left}
+  .cs-opt.active{border-color:var(--eau);background:var(--eau);color:#fff}
+  .cs-note{margin-top:8px;font-size:.72rem;color:var(--eau-fonce);line-height:1.4}
+
 
 </style>
 </head>
@@ -508,11 +514,10 @@
       </picture>
     </div>
   </div>
-  <div class="offre-visual" id="offreVisualFlasques" style="display:none">
-    <div style="border-radius:16px;overflow:hidden;box-shadow:var(--ombre);">
+  <div class="offre-visual" id="offreVisualOctobre" style="display:none">
+    <div style="border-radius:16px;overflow:hidden;box-shadow:var(--ombre);display:flex;justify-content:center;">
       <picture>
-        <source media="(min-width:640px)" srcset="Images/op%20flasques%20pc.webp">
-        <img src="Images/op%20flasques.webp" alt="Opération Flasques" style="width:auto;max-width:100%;height:auto;max-height:calc(100vh - 260px);display:block;margin:0 auto;cursor:pointer;" onclick="openImage(this.currentSrc)">
+        <img src="Images/offre%20octobre.jpeg" alt="Opération gratuité Hydratis du 1er octobre au 30 novembre 2026" style="width:auto;max-width:100%;height:auto;max-height:calc(100vh - 160px);display:block;cursor:pointer;object-fit:contain;" onclick="openImage(this.currentSrc)">
       </picture>
     </div>
   </div>
@@ -528,6 +533,16 @@
 
 <!-- PANEL COMMANDE -->
 <section class="tab-panel" id="tab-commande">
+
+<!-- MODE COMMERCIAL : visible uniquement avec ?modecs dans l'URL -->
+<div class="cs-panel" id="csPanel" style="display:none">
+  <div class="cs-panel-title">🧑‍💼 Mode commercial — type de proposition</div>
+  <div class="cs-options">
+    <button type="button" class="cs-opt active" data-csmode="reassort">🔁 Proposition de réassort</button>
+    <button type="button" class="cs-opt" data-csmode="implantation">🏪 Proposition d'implantation</button>
+  </div>
+  <div class="cs-note">Le récapitulatif devient une proforma. L'e-mail est envoyé au magasin (copie au commercial) et n'a pas valeur de commande tant que le magasin ne l'a pas validé.</div>
+</div>
 
 <!-- CLIENT — bulle -->
 <div class="bulle-infos" id="bulleInfos">
@@ -572,21 +587,22 @@
 </div>
 </div>
 
-<div id="promoFlasques" style="display:none">
+<div id="promoOctobre" style="display:none">
 <div class="op-titre-bdc">
-  <span class="otb-tag">🆕 Opération Flasques 🆕</span>
+  <span class="otb-tag">🆕 Opération Gratuité — octobre / novembre 2026 🆕</span>
 </div>
-<div class="gift-banner" id="giftBannerFlasques">
-  <div class="gb-intro-accroche" style="font-size:.9rem;font-weight:800;color:var(--vert);display:flex;align-items:center;gap:7px;">Jusqu'à 20 flasques et 1 PLV de sol offerts grâce aux offres volumiques</div>
-  <p class="gb-intro">Vos flasques offertes progressent à chaque palier de commande (du 01/09/2026 au 31/10/2026) :</p>
+<div class="gift-banner" id="giftBannerOctobre">
+  <div class="gb-intro-accroche" style="font-size:.9rem;font-weight:800;color:var(--vert);display:flex;align-items:center;gap:7px;">Jusqu'à 2 packs de 8 tubes et 1 PLV de sol offerts</div>
+  <p class="gb-intro">Offre du 01/10/2026 au 30/11/2026. Saisissez les quantités totales à livrer, packs offerts inclus : leur valeur est déduite automatiquement. Seuls les displays de 8 tubes sont éligibles.</p>
   <div class="gift-grid">
-    <div class="gg-head">Palier</div><div class="gg-head">Flasques</div><div class="gg-head gg-r">PLV de sol</div>
-    <div class="gift-tier ggrow" data-tier="9"><span>9 packs (72 tubes)</span><span>10 offertes</span><span class="gg-mg">1 offerte</span></div>
-    <div class="gift-tier ggrow max" data-tier="16"><span>16 packs (128 tubes)</span><span>20 offertes</span><span class="gg-mg">1 offerte</span></div>
+    <div class="gg-head">Total livré</div><div class="gg-head">Packs achetés / offerts</div><div class="gg-head gg-r">PLV de sol</div>
+    <div class="gift-tier ggrow" data-tier="9"><span>9 packs (72 tubes)</span><span>8 + 1 offert</span><span class="gg-mg">1 offerte</span></div>
+    <div class="gift-tier ggrow max" data-tier="16"><span>16 packs (128 tubes)</span><span>14 + 2 offerts</span><span class="gg-mg">1 offerte</span></div>
   </div>
   <div class="gift-current">
-    <span>Displays commandés : <span id="gc_count_fl">0</span></span>
-    <span>Flasques offertes : <span class="gc-val" id="gc_freefl">0</span></span>
+    <span>Packs à livrer : <span id="gc_count_fl">0</span></span>
+    <span>Dont packs offerts : <span class="gc-val" id="gc_freepacks">0</span></span>
+    <span>PLV de sol offertes : <span class="gc-val" id="gc_freeplv">0</span></span>
   </div>
 </div>
 </div>
@@ -825,7 +841,7 @@
 
 <!-- RECAP -->
 <div class="recap">
-  <div class="recap-head">Récapitulatif de la commande</div>
+  <div class="recap-head" id="recapHead">Récapitulatif de la commande</div>
   <div class="recap-body">
 
     <div class="rcat">
@@ -850,7 +866,6 @@
     <div class="rcat">
       <div class="rcat-title">💧 FLASQUES SOUPLES</div>
       <div class="rline"><span class="rl-lbl">Nb de flasques</span><span class="rl-val" id="r_nbflasques">0</span></div>
-      <div class="rline gift" id="r_flgratuit_row" style="display:none"><span class="rl-lbl">Dont flasques offertes</span><span class="rl-val" id="r_flgratuit">0</span></div>
       <div class="rcat-total"><span>Total HT flasques</span><span id="r_htflasques">0,00 €</span></div>
     </div>
 
@@ -1023,10 +1038,10 @@ const REMISE = 0.37;
 
 // ===== PÉRIODE PROMOTIONNELLE =====
 // "ete"      : Opération Été 2026 (tubes offerts)              — jusqu'au 31/08/2026 23:59:59
-// "flasques" : Opération Flasques (flasques + PLV de sol offerts) — du 01/09/2026 au 31/10/2026 23:59:59
-// "aucune"   : aucune opération commerciale active (après le 31/10/2026)
+// "octobre"  : Opération Gratuité (packs de 8 + PLV de sol offerts), disponible en saisie après la campagne été, fin le 30/11/2026.
+// "aucune"   : aucune opération commerciale active (après le 30/11/2026)
 const OP_ETE_FIN = new Date(2026,7,31,23,59,59);        // 31 août 2026
-const OP_FLASQUES_FIN = new Date(2026,9,31,23,59,59);   // 31 octobre 2026
+const OP_OCTOBRE_FIN = new Date(2026,10,30,23,59,59);  // 30 novembre 2026
 
 // 🔍 MODE APERÇU : ajoutez ?previewDate=2026-09-01 (ou toute autre date AAAA-MM-JJ) à la fin de
 // l'URL de la page pour voir instantanément ce qu'elle affichera à cette date, sans changer
@@ -1036,7 +1051,7 @@ const NOW = __previewDateParam ? new Date(__previewDateParam+'T12:00:00') : new 
 if(__previewDateParam){
   console.log('[Aperçu] Date simulée : '+NOW.toLocaleDateString('fr-FR')+' — retirez ?previewDate=... de l\'URL pour revenir à la date réelle.');
 }
-const PROMO_PERIOD = NOW <= OP_ETE_FIN ? 'ete' : (NOW <= OP_FLASQUES_FIN ? 'flasques' : 'aucune');
+const PROMO_PERIOD = NOW <= OP_ETE_FIN ? 'ete' : (NOW <= OP_OCTOBRE_FIN ? 'octobre' : 'aucune');
 
 if(__previewDateParam){
   const previewBanner = document.createElement('div');
@@ -1046,16 +1061,38 @@ if(__previewDateParam){
 }
 
 document.getElementById('offreVisualEte').style.display = PROMO_PERIOD==='ete' ? '' : 'none';
-document.getElementById('offreVisualFlasques').style.display = PROMO_PERIOD==='flasques' ? '' : 'none';
+document.getElementById('offreVisualOctobre').style.display = PROMO_PERIOD==='octobre' ? '' : 'none';
 document.getElementById('offreVisualAucune').style.display = PROMO_PERIOD==='aucune' ? '' : 'none';
 document.getElementById('promoEte').style.display = PROMO_PERIOD==='ete' ? '' : 'none';
-document.getElementById('promoFlasques').style.display = PROMO_PERIOD==='flasques' ? '' : 'none';
+document.getElementById('promoOctobre').style.display = PROMO_PERIOD==='octobre' ? '' : 'none';
 
 // 🔧 Destinataire de la commande (ta boîte / service commandes)
 const DESTINATAIRE = "thomas.m@magnitude.fr";
 const MAILER_URL = "https://mailer.thomas-m-682.workers.dev";
 const FRANCO_MIN = 200;
 let ORDER_SENT = false;
+
+// 🧑‍💼 MODE COMMERCIAL : ajoutez ?modecs à la fin de l'URL (ou &modecs si l'URL a déjà un « ? »,
+// ou #modecs). Donne accès aux propositions de réassort / d'implantation (récap = proforma).
+const MODE_CS = /(^|[?&#])modecs\b/i.test(window.location.search + window.location.hash);
+let CS_MODE = 'reassort'; // 'reassort' | 'implantation'
+const CS_LABELS = {
+  reassort:     {titre:'Proposition de réassort',     court:'réassort'},
+  implantation: {titre:"Proposition d'implantation",  court:'implantation'}
+};
+function applyCsMode(){
+  if(!MODE_CS) return;
+  const t = CS_LABELS[CS_MODE].titre;
+  document.getElementById('recapHead').textContent = t + ' — Proforma';
+  const btn = document.getElementById('bb_btn');
+  if(!ORDER_SENT) btn.textContent = 'ENVOYER LA PROPOSITION';
+  document.querySelectorAll('.cs-opt').forEach(b=>b.classList.toggle('active', b.dataset.csmode===CS_MODE));
+}
+if(MODE_CS){
+  document.getElementById('csPanel').style.display = '';
+  document.querySelectorAll('.cs-opt').forEach(b=>b.addEventListener('click',()=>{ CS_MODE = b.dataset.csmode; applyCsMode(); }));
+  applyCsMode();
+}
 
 const COMMERCIAUX = {
   // Stéphane Lefrand - Ouest
@@ -1211,7 +1248,9 @@ const fmt = n => n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFracti
 const fmtPct = n => (n*100).toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1})+' %';
 
 // net net unitaire
-function netNet(base){ return base*(1-REMISE); }
+// Arrondi au centime (comme sur la facture) : lignes et totaux tombent toujours juste
+const round2 = n => Math.round(n*100)/100;
+function netNet(base){ return round2(base*(1-REMISE)); }
 function marge(netnet,pmc){ return 1-(netnet/(pmc/1.055)); }
 function coeff(netnet,pmc){ return pmc/netnet; }
 
@@ -1303,20 +1342,20 @@ const lp=document.getElementById('list-pack20');
 lp.appendChild(makeProd(PACK20,'tube'));
 
 function freeDisplays(n){
-  if(PROMO_PERIOD !== 'ete') return 0; // offre "tubes offerts" active uniquement pendant l'Opération Été 2026
+  // Opération Été 2026 et Opération Gratuité (oct./nov.) : 9 livrés = 8 + 1 offert, 16 livrés = 14 + 2 offerts
+  if(PROMO_PERIOD !== 'ete' && PROMO_PERIOD !== 'octobre') return 0;
   return n >= 16 ? 2 :
          n >= 9 ? 1 : 0;
 }
-function freeFlasques(n){
-  if(PROMO_PERIOD !== 'flasques') return 0; // offre "flasques offertes" active uniquement pendant l'Opération Flasques
-  return n >= 16 ? 20 :
-         n >= 9 ? 10 : 0;
+function freePlvSol(n){
+  if(PROMO_PERIOD !== 'octobre') return 0;
+  return n >= 9 ? 1 : 0;
 }
 
 function recompute(){
-  const nnTube = netNet(T_BASE);   // 5,4999 € / display de 8 (base par display)
-  const nnP20  = netNet(P20_BASE); // 109,998 € / display de 20
-  const nnGour = netNet(G_BASE);   // 9,22761 € / gourde
+  const nnTube = netNet(T_BASE);   // 5,67 € HT par tube
+  const nnP20  = netNet(P20_BASE); // 113,40 € / display de 20
+  const nnGour = netNet(G_BASE);   // 9,51 € / gourde
 
   // displays de 8 uniquement
   let nbDisplays8=0, sousTotalTubes=0, nbTubes=0;
@@ -1332,9 +1371,10 @@ function recompute(){
   const p20Total=nnP20*q20;
   document.querySelector('[data-linetotal="PACK20_TU_MIX"]').textContent=fmt(p20Total);
 
-  // total displays pour calcul gratuit (displays 8 + pack 20)
-  const totalDisplaysCmd = nbDisplays8 + q20;
+  // Quantité totale livrée, gratuités incluses ; seuls les packs de 8 sont éligibles.
+  const totalDisplaysCmd = nbDisplays8;
   const free = freeDisplays(totalDisplaysCmd);
+  const plvSolOffertes = freePlvSol(totalDisplaysCmd);
 
   // remise gratuit au prix net-net
   const remiseGratuit = free * 8 * nnTube;
@@ -1359,24 +1399,15 @@ function recompute(){
   });
 
   // flasques (TVA 20%)
-  const freeFlGranted = freeFlasques(totalDisplaysCmd); // flasques offertes par le palier atteint (0 hors Opération Flasques)
-  const requiredFlLots = Math.ceil(freeFlGranted/10);
-  if(flasqueLots < requiredFlLots){
-    // ajout automatique des lots offerts dans le panier dès que le palier est atteint
-    flasqueLots = requiredFlLots;
-    const flQtyInput = document.getElementById('fl-qty');
-    if(flQtyInput) flQtyInput.value = flasqueLots;
-  }
   const flLots = flasqueLots;
   const flNbUnites = flLots*10;
-  const freeFl = Math.min(freeFlGranted, flNbUnites); // plafonnées à la quantité présente dans le panier
-  const flTotalHT = (flNbUnites - freeFl)*FLASQUE_PA;
+  const flTotalHT = flNbUnites*FLASQUE_PA;
   document.getElementById('fl-total').textContent = fmt(flTotalHT);
 
   const totalHT = totalHTtubes + p20Total + totalGourdes + flTotalHT;
-  const tva55 = (totalHTtubes + p20Total)*TVA_TUBE;
-  const tva20 = (totalGourdes + flTotalHT)*TVA_GOURDE;
-  const ttc = totalHT + tva55 + tva20;
+  const tva55 = round2((totalHTtubes + p20Total)*TVA_TUBE);
+  const tva20 = round2((totalGourdes + flTotalHT)*TVA_GOURDE);
+  const ttc = round2(totalHT + tva55 + tva20);
 
   // MAJ récap
   set('r_nbtubes',nbDisplays8>0?nbDisplays8+' display'+(nbDisplays8>1?'s':'')+' ('+nbTubes+' tubes)':'0');
@@ -1388,8 +1419,6 @@ function recompute(){
   set('r_htgourdes',fmt(totalGourdes));
   set('r_nbflasques',flNbUnites);
   set('r_htflasques',fmt(flTotalHT));
-  document.getElementById('r_flgratuit_row').style.display = freeFl>0 ? '' : 'none';
-  set('r_flgratuit',freeFl);
   set('r_totalht',fmt(totalHT));
   set('r_tva55',fmt(tva55));
   set('r_tva20',fmt(tva20));
@@ -1400,9 +1429,10 @@ function recompute(){
   // gratuit banner (Opération Été)
   set('gc_count',totalDisplaysCmd);
   set('gc_free',free);
-  // gratuit banner (Opération Flasques)
+  // Gratuités de l'opération octobre / novembre
   set('gc_count_fl',totalDisplaysCmd);
-  set('gc_freefl',freeFl);
+  set('gc_freepacks',free);
+  set('gc_freeplv',plvSolOffertes);
   document.querySelectorAll('.gift-tier').forEach(t=>{
     t.classList.toggle('hit',totalDisplaysCmd>=parseInt(t.dataset.tier));
   });
@@ -1410,9 +1440,10 @@ function recompute(){
   // note PLV de sol selon la période promotionnelle et le palier atteint
   const plvSolNote = document.getElementById('plvSolNote');
   if(plvSolNote){
-    if(PROMO_PERIOD==='flasques'){
-      if(totalDisplaysCmd>=9) plvSolNote.textContent = '✅ 1 PLV de sol offerte (9 packs atteints)';
-      else plvSolNote.textContent = '⚠️ 1 PLV de sol offerte dès 9 packs (72 tubes) commandés';
+    if(PROMO_PERIOD==='octobre'){
+      plvSolNote.textContent = plvSolOffertes > 0
+        ? `✅ ${plvSolOffertes} PLV de sol offerte, incluse automatiquement dans la commande. La quantité saisie ci-dessous s'ajoute à cette dotation.`
+        : '1 PLV de sol offerte dès 9 packs livrés (72 tubes), gratuités incluses.';
     } else {
       plvSolNote.textContent = "⚠️ Sous réserve d'avoir déjà commandé au minimum 144 tubes";
     }
@@ -1479,7 +1510,8 @@ function recompute(){
   }
 
   // état courant pour le mail
-  window.ORDER = {nbTubes,free,sousTotalHT,totalHTtubes,q20,p20Total,nbGourdes,totalGourdes,totalHT,tva55,tva20,ttc,totalDisplaysCmd,flLots,flNbUnites,flTotalHT,flFree:freeFl};
+  window.ORDER = {nbTubes,free,plvSolOffertes,sousTotalHT,totalHTtubes,q20,p20Total,nbGourdes,totalGourdes,totalHT,tva55,tva20,ttc,totalDisplaysCmd,flLots,flNbUnites,flTotalHT};
+  updatePlvRecap();
 
   // flasque (après ORDER car dépend de totalDisplaysCmd)
   if(typeof updateFlasque==='function') updateFlasque();
@@ -1545,7 +1577,7 @@ document.getElementById('bb_btn').addEventListener('click',function(){
   const cp = v('c_cp');
   if(!nom){
     alert("Merci de renseigner le nom du point de vente.");
-    document.getElementById('c_nom').focus();
+    document.getElementById('c_name').focus();
     return;
   }
   if(!cp){
@@ -1553,112 +1585,371 @@ document.getElementById('bb_btn').addEventListener('click',function(){
     document.getElementById('c_cp').focus();
     return;
   }
-  const client = nom + (ville ? ` — ${ville}` : '') + (cp ? ` (${cp})` : '');
+  const contactVal = v('c_contact');
+  const emailClient = v('c_email');
+  // En mode commercial, la proposition part au magasin : son e-mail est indispensable
+  if(MODE_CS && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailClient)){
+    alert("Merci de renseigner un e-mail valide pour le magasin : la proposition lui est envoyée.");
+    document.getElementById('c_email').focus();
+    return;
+  }
+  const client = nom + (ville ? ` — ${ville}` : '');
 
-  // Lignes commandées
-  let lignes = [];
-  TUBES.forEach(([name,ref])=>{
-    const q = state[ref]||0;
-    if(q>0) lignes.push(`  • ${name} : ${q} display${q>1?'s':''}`);
+  // Prix de référence (base / remise / net) pour le détail des lignes
+  const nnTubeRef = netNet(T_BASE);
+  const nnP20Ref  = netNet(P20_BASE);
+  const nnGourRef = netNet(G_BASE);
+  const FLASQUE_BASE_REF = 9.51;
+  const escHtml = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  // Lignes commandées : {name, uc, qte:'40 UC', sous:'5 displays de 8 tubes', base, nn, total, ref, ean, free}
+  // Le mail affiche un récap compact ; le détail (remise, SKU, gencodes) est dans le PDF joint.
+  const mkItem = (name,uc,sous,base,nn,ref,ean,free=false) =>
+    ({name, uc, qte:`${uc} UC`, sous, base, nn:free?0:nn, total:free?0:round2(uc*nn), ref, ean, free});
+  const plural = (n,s) => `${n} ${s}${n>1?'s':''}`;
+
+  // Displays offerts : ils font partie des displays saisis (« 9 dont 1 offert »). On les répartit
+  // automatiquement sur les parfums les plus commandés et on les sort en lignes « OFFERT » à 0 €.
+  const tubesCmd = TUBES.map(([name,ref,ean])=>({name,ref,ean,q:state[ref]||0,off:0})).filter(t=>t.q>0);
+  for(let k=0;k<o.free && tubesCmd.length;k++){
+    const t = tubesCmd.reduce((a,b)=>(b.q-b.off)>(a.q-a.off)?b:a);
+    if(t.q-t.off<=0) break;
+    t.off++;
+  }
+  const itemsTubes = tubesCmd.flatMap(t=>{
+    const paid = t.q - t.off, out = [];
+    if(paid>0)  out.push(mkItem(t.name, paid*8, `${plural(paid,'display')} de 8 tubes`, T_BASE, nnTubeRef, t.ref, t.ean));
+    if(t.off>0) out.push(mkItem(`${t.name} — OFFERT`, t.off*8, `${plural(t.off,'display')} offert${t.off>1?'s':''}`, T_BASE, 0, t.ref, t.ean, true));
+    return out;
   });
-  let lignesG = [];
-  GOURDES.forEach(([name,ref])=>{
-    const q = state[ref]||0;
-    if(q>0) lignesG.push(`  • ${name} : ${q}`);
-  });
+  const itemsGourdes = GOURDES.filter(([,ref])=>(state[ref]||0)>0)
+    .map(([name,ref,ean])=>mkItem(name, state[ref], '', G_BASE, nnGourRef, ref, ean));
   const q20line = state['PACK20_TU_MIX']||0;
+  const itemsP20 = q20line>0 ? [mkItem('Display de 20 tubes prérempli', q20line*20, `${plural(q20line,'display')} de 20 tubes`, P20_BASE/20, nnP20Ref/20, PACK20[1], PACK20[2])] : [];
+  const itemsFlasques = o.flNbUnites>0 ? [mkItem('Flasques souples', o.flNbUnites, `${plural(o.flLots,'lot')} de 10`, FLASQUE_BASE_REF, FLASQUE_PA, 'FLAS_ACCROCHE_500', '3760304103889')] : [];
 
   const opLigne = PROMO_PERIOD==='ete'
     ? "Opération Été 2026 (offre valable du 01/07/2026 au 31/08/2026)"
-    : PROMO_PERIOD==='flasques'
-      ? "Opération Flasques (offre valable du 01/09/2026 au 31/10/2026)"
+    : PROMO_PERIOD==='octobre'
+      ? "Opération Gratuité — Hydratis (offre valable du 01/10/2026 au 30/11/2026)"
       : "Hydratis";
-  const corps =
-`BON DE COMMANDE — HYDRATIS
+  const docTitre = MODE_CS
+    ? `${CS_LABELS[CS_MODE].titre.toUpperCase()} (PROFORMA) — HYDRATIS`
+    : 'BON DE COMMANDE — HYDRATIS';
+  const enteteTxt =
+`${docTitre}
 ${opLigne}
 
 CLIENT
   Point de vente : ${nom}
   Ville : ${ville||'-'}
   Code postal : ${cp||'-'}
-${v('c_bt49')?`  Code BT-49 : ${v('c_bt49')}\n`:''}  Contact : ${v('c_contact')||'-'}
-  Email : ${v('c_email')||'-'}
-${v('c_notes')?`  Notes : ${v('c_notes')}\n`:''}
-────────────────────────────────
-💧 DISPLAYS 8 TUBES 💧
-${[o.free > 0 ? `🆓 ${o.free} DISPLAY(S) OFFERT(S) 🆓` : null, lignes.length ? lignes.join('\n') : '  (aucun)'].filter(Boolean).join('\n')}
-Nb total de tubes : ${o.nbTubes}
-${q20line>0?`
-────────────────────────────────
-📦DISPLAY 20 TUBES PRÉREMPLI📦
-  • DISPLAY DE 20 TUBES : ${q20line}
-`:''}
-────────────────────────────────
-🥤GOURDES🥤
-${lignesG.length?lignesG.join('\n'):'  (aucune)'}
-  Nb de gourdes : ${o.nbGourdes}
-${o.flNbUnites>0?`
-────────────────────────────────
-🧃FLASQUES (offre PCB de 10)🧃
-  • Flasques souples : ${o.flLots} lot(s) de 10 = ${o.flNbUnites} unités${o.flFree>0?` (dont ${o.flFree} offerte${o.flFree>1?'s':''})`:''}
-`:''}
-────────────────────────────────
-📢MATÉRIELS PLV📢
-${PLV_REFS.map(r=>{ const q=getPlvQty(r); return q>0?`  • ${PLV_NOMS[r]} : ${q}`:null; }).filter(Boolean).join('\n')||'  (aucun)'}
+${v('c_bt49')?`  Code BT-49 : ${v('c_bt49')}\n`:''}  Contact : ${contactVal||'-'}
+  Téléphone : ${v('c_phone')||'-'}
+  Email : ${emailClient||'-'}
+${v('c_notes')?`  Notes : ${v('c_notes')}\n`:''}`;
 
-TOTAUX
-  Total HT tubes : ${fmt(o.totalHTtubes)}${o.free>0?` (dont ${o.free} display${o.free>1?'s':''} offert${o.free>1?'s':''})`:''}${o.q20>0?`
-  Total HT display 20 : ${fmt(o.p20Total)}`:''}
-  Total HT gourdes : ${fmt(o.totalGourdes)}${o.flNbUnites>0?`
-  Total HT flasques : ${fmt(o.flTotalHT)}`:''}
-  Total HT : ${fmt(o.totalHT)}
-  TVA 5,5% : ${fmt(o.tva55)}
-  TVA 20% : ${fmt(o.tva20)}
-  TOTAL TTC : ${fmt(o.ttc)}
+  // Sections produits (utilisées par le récap du mail et par le PDF)
+  const sections = [
+    {titre:'💧 DISPLAYS 8 TUBES', items:itemsTubes, vide:'(aucun)',
+     avant: o.free>0 ? `🆓 ${o.free} display${o.free>1?'s':''} offert${o.free>1?'s':''} (${o.free*8} UC) — inclus ci-dessous à ${fmt(0)}` : ''},
+    ...(itemsP20.length ? [{titre:'📦 DISPLAY 20 TUBES PRÉREMPLI', items:itemsP20}] : []),
+    {titre:'🥤 GOURDES', items:itemsGourdes, vide:'(aucune)'},
+    ...(itemsFlasques.length ? [{titre:'🧃 FLASQUES (offre PCB de 10)', items:itemsFlasques}] : []),
+  ];
+  const allItems = sections.flatMap(s=>s.items);
+  const plvSel = PLV_REFS.map(r=>({n:PLV_NOMS[r], q:getPlvQty(r)})).filter(x=>x.q>0);
+  const totaux = [['Total HT',fmt(o.totalHT)],['TVA 5,5 %',fmt(o.tva55)],['TVA 20 %',fmt(o.tva20)],['Total TTC',fmt(o.ttc)]];
+  const mentionDoc = MODE_CS
+    ? "Proforma établie par votre commercial Hydratis. Ce document n'a pas valeur de commande."
+    : 'Commande passée depuis le bon de commande en ligne Hydratis.';
+  const SEP = '────────────────────────────────';
 
+  // Remises détaillées colonne par colonne (mail, confirmation, mail de validation) : Prix HT → remises → Prix HT net
+  const REMISES_AFF = [[`Remise -${Math.round(REMISE*100)} %`, REMISE]];
+  const remLbls = REMISES_AFF.map(r=>r[0]);
+  const remPct = r => `-${Math.round(r*100)} %`;
 
-Commande passée depuis le bon de commande en ligne Hydratis.`;
+  // Récap compact — texte : Produit : UC · Prix HT · remises · Prix HT net · Total HT
+  const recapTxt = [
+    SEP,
+    ...sections.flatMap(s=>[
+      s.titre,
+      ...(s.avant?[s.avant]:[]),
+      ...(s.items.length ? s.items.map(it=>`  • ${it.name} : ${it.qte} · `+
+        (it.free ? 'OFFERT' : `Prix HT ${fmt(it.base)} · ${remLbls.join(' · ')}`)+
+        ` · Prix HT net ${fmt(it.nn)} · Total HT ${fmt(it.total)}`) : [`  ${s.vide}`]),
+      ''
+    ]),
+    '📢 MATÉRIELS PLV (gratuits)',
+    ...(plvSel.length ? plvSel.map(p=>`  • ${p.n} : ${p.q}`) : ['  (aucun)']),
+    '',
+    SEP,
+    ...totaux.map(([k,val])=>`${k} : ${val}`),
+    '',
+    mentionDoc
+  ].join('\n');
+
+  // Récap compact — HTML : Produit | UC | Prix HT | Remise(s) | Prix HT net / UC | Total HT
+  const TD = 'padding:7px 8px;border-bottom:1px solid #e3e8ec;font-size:14px;font-family:Segoe UI,Arial,sans-serif;color:#0c2434;';
+  const TH = 'padding:8px;background:#0c2434;color:#fff;font-size:12px;font-family:Segoe UI,Arial,sans-serif;text-transform:uppercase;letter-spacing:.3px;';
+  const NCOL = 5 + REMISES_AFF.length;
+  const trTitre = t => `<tr><td colspan="${NCOL}" style="${TD}background:#eef3f6;font-weight:800">${escHtml(t)}</td></tr>`;
+  const recapHtml =
+    '<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;max-width:640px;border-collapse:collapse;margin:14px 0 0">'+
+    `<tr><th style="${TH}text-align:left">Produit</th><th style="${TH}text-align:center">UC</th><th style="${TH}text-align:right">Prix HT / UC</th>`+
+    remLbls.map(l=>`<th style="${TH}text-align:center">${escHtml(l)}</th>`).join('')+
+    `<th style="${TH}text-align:right">Prix HT net / UC</th><th style="${TH}text-align:right">Total HT</th></tr>`+
+    sections.map(s=>
+      trTitre(s.titre)+
+      (s.avant?`<tr><td colspan="${NCOL}" style="${TD}font-weight:700;font-size:13px">${escHtml(s.avant)}</td></tr>`:'')+
+      (s.items.length ? s.items.map(it=>{
+        const c = '';  // tout en noir, seul le prix HT net est en vert
+        return `<tr><td style="${TD}${c}">${escHtml(it.name)}${it.sous?`<br><span style="font-size:12px;color:#5d7080;font-weight:400">${escHtml(it.sous)}</span>`:''}</td>`+
+          `<td style="${TD}${c}text-align:center;white-space:nowrap">${it.uc}</td>`+
+          `<td style="${TD}${c}text-align:right;white-space:nowrap">${it.free?'-':fmt(it.base)}</td>`+
+          REMISES_AFF.map(([,r])=>`<td style="${TD}text-align:center;white-space:nowrap">${it.free?'OFFERT':remPct(r)}</td>`).join('')+
+          `<td style="${TD}color:#138a52;font-weight:700;text-align:right;white-space:nowrap">${fmt(it.nn)}</td>`+
+          `<td style="${TD}${c}text-align:right;font-weight:700;white-space:nowrap">${fmt(it.total)}</td></tr>`;
+      }).join('') : `<tr><td colspan="${NCOL}" style="${TD}color:#5d7080">${s.vide}</td></tr>`)
+    ).join('')+
+    trTitre('📢 MATÉRIELS PLV (gratuits)')+
+    (plvSel.length
+      ? plvSel.map(p=>`<tr><td style="${TD}">${escHtml(p.n)}</td><td style="${TD}text-align:center">${p.q}</td><td colspan="${NCOL-2}" style="${TD}"></td></tr>`).join('')
+      : `<tr><td colspan="${NCOL}" style="${TD}color:#5d7080">(aucun)</td></tr>`)+
+    totaux.map(([k,val],i)=>{
+      const st = (i===totaux.length-1 ? 'background:#0c2434;color:#fff;font-weight:800;' : 'font-weight:700;')+(i===0?'border-top:3px solid #0c2434;padding-top:12px;':'');  // trait épais avant les totaux
+      return `<tr><td colspan="${NCOL-1}" style="${TD}${st}text-align:right">${k}</td><td style="${TD}${st}text-align:right;white-space:nowrap">${val}</td></tr>`;
+    }).join('')+
+    '</table>'+
+    `<p style="font-family:Segoe UI,Arial,sans-serif;font-size:12px;color:#5d7080;margin:8px 0 0">${escHtml(mentionDoc)}</p>`;
+
+  const preHtml = s => '<pre style="font-family:inherit;white-space:pre-wrap;margin:0">'+escHtml(s)+'</pre>';
 
 const dateJour = new Date().toLocaleDateString('fr-FR');
-const objet = `Commande Hydratis BtoB — ${client}${cp?` (${cp})`:''} — ${dateJour}`;
+const objet = MODE_CS
+  ? `${CS_LABELS[CS_MODE].titre} Hydratis — ${client}${cp?` (${cp})`:''} — ${dateJour}`
+  : `Commande Hydratis BtoB — ${client}${cp?` (${cp})`:''} — ${dateJour}`;
 
 const dept = deptFromCP(cp);
 const emailCommercial = COMMERCIAUX[dept] || DESTINATAIRE;
-const emailClient = v('c_email');
-const intro='Bonjour,\n\nMerci pour votre commande.\n\nVotre demande a bien été transmise. Notre équipe commerciale la traitera dans les meilleurs délais.\n\nVous trouverez ci-dessous le récapitulatif de votre commande.\n\n';
-const outro='\n\nCet e-mail est généré automatiquement.\nMerci de ne pas y répondre.\n\nPour toute question concernant votre commande, contactez votre commercial : '+emailCommercial+'\n';
 
-const emailBody = intro+corps+outro;
-const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-let emailHtml = '<pre style="font-family:inherit;white-space:pre-wrap;margin:0">'+escHtml(emailBody)+'</pre>';
+let intro, outro;
+if(!MODE_CS){
+  intro='Bonjour,\n\nMerci pour votre commande.\n\nVotre demande a bien été transmise. Notre équipe commerciale la traitera dans les meilleurs délais.\n\nVous trouverez ci-dessous le récapitulatif de votre commande.\n\n';
+  outro='\n\nCet e-mail est généré automatiquement.\nMerci de ne pas y répondre.\n\nPour toute question concernant votre commande, contactez votre commercial : '+emailCommercial+'\n';
+} else if(CS_MODE==='implantation'){
+  intro='Bonjour'+(contactVal?' '+contactVal:'')+',\n\nSuite à notre échange, je vous propose l\'implantation de la gamme Hydratis dans votre magasin '+nom+'.\n\nVous trouverez ci-dessous la proforma détaillant l\'assortiment de lancement conseillé (produits et matériels PLV), ainsi que les conditions tarifaires associées.\n\n';
+  outro='\n\nCette proposition n\'a pas valeur de commande.\nPour la valider, cliquez sur le bouton « Je valide la proposition ». Pour l\'ajuster, répondez simplement à cet e-mail.\n\nJe reste à votre disposition pour organiser la mise en place en magasin.\n\nBien cordialement,\nVotre commercial Hydratis\n'+emailCommercial+'\n';
+} else {
+  intro='Bonjour'+(contactVal?' '+contactVal:'')+',\n\nSuite à l\'analyse de vos ventes et de votre stock, je vous propose le réassort Hydratis suivant pour votre magasin '+nom+'.\n\nVous trouverez ci-dessous le récapitulatif de la proposition.\n\n';
+  outro='\n\nCette proposition n\'a pas valeur de commande.\nPour la valider, cliquez sur le bouton « Je valide la proposition ». Pour modifier les quantités, répondez simplement à cet e-mail.\n\nBien cordialement,\nVotre commercial Hydratis\n'+emailCommercial+'\n';
+}
+
+// Mode commercial : bouton « Je valide la proposition ». {{ACCEPT_URL}} est remplacé par le worker
+// mailer par un lien signé qui renvoie la validation au commercial (client en copie).
+const acceptBtnHtml =
+  '<table role="presentation" cellspacing="0" cellpadding="0" style="margin:22px 0"><tr><td style="background:#138a52;border-radius:10px">'+
+  '<a href="{{ACCEPT_URL}}" target="_blank" style="display:inline-block;padding:14px 26px;color:#ffffff;font-weight:800;font-size:16px;text-decoration:none;font-family:Segoe UI,Arial,sans-serif">✅ Je valide la proposition</a>'+
+  '</td></tr></table>';
+// Mention de la pièce jointe : ajoutée seulement si le PDF a bien été généré
+const pjLigne = MODE_CS
+  ? '📎 Retrouvez la proforma détaillée (remise, SKU et gencodes) dans le PDF joint.'
+  : '📎 Le détail complet (remise, SKU et gencodes) figure dans le PDF joint, prêt à imprimer.';
 const bt49Val = v('c_bt49');
-if(bt49Val) emailHtml = emailHtml.replace('Code BT-49 : '+escHtml(bt49Val),'<strong style="color:#e11d2e">Code BT-49 : '+escHtml(bt49Val)+'</strong>');
+const buildEmailBody = avecPdf =>
+  intro + enteteTxt + '\n' + recapTxt +
+  (avecPdf ? '\n\n'+pjLigne : '') +
+  (MODE_CS ? '\n\n👉 Valider la proposition en un clic : {{ACCEPT_URL}}' : '') +
+  outro;
+const buildEmailHtml = avecPdf => {
+  let h = preHtml(intro) + preHtml(enteteTxt) + recapHtml +
+    (avecPdf ? `<p style="font-family:Segoe UI,Arial,sans-serif;font-size:14px;font-weight:700;color:#0673a3;background:#e3f5fc;border-radius:8px;padding:10px 12px;margin:14px 0 0;max-width:616px">${escHtml(pjLigne)}</p>` : '') +
+    (MODE_CS ? acceptBtnHtml+preHtml(outro.replace(/^\n+/,'')) : preHtml(outro));
+  if(bt49Val) h = h.replace('Code BT-49 : '+escHtml(bt49Val),'<strong style="color:#e11d2e">Code BT-49 : '+escHtml(bt49Val)+'</strong>');
+  return h;
+};
+
+// Récap simplifié (page de confirmation + mail « proposition validée ») : produit, UC, votre prix HT, total
+const recapCourt = {
+  lignes: sections.filter(s=>s.items.length).flatMap(s=>[{sec:s.titre}, ...s.items.map(it=>({n:it.name, uc:it.qte, pu:fmt(it.nn), t:fmt(it.total), off:!!it.free,
+    pb: it.free?'-':fmt(it.base), rms: REMISES_AFF.map(([,r])=>it.free?'OFFERT':remPct(r))}))]),
+  remises: remLbls,
+  plv: plvSel,
+  totaux
+};
+
+// PDF joint au mail (bon de commande ou proforma)
+const pdfTitre = MODE_CS ? `${CS_LABELS[CS_MODE].titre} (proforma)` : 'Bon de commande';
+const pdfNom = `${MODE_CS?'Proforma':'Commande'}_Hydratis_${nom}_${dateJour}`.replace(/[^\w\-]+/g,'_')+'.pdf';
+const pdfData = {
+  titre: pdfTitre, operation: opLigne, date: dateJour,
+  infos: [['Point de vente',nom],['Ville',`${ville||'-'} (${cp})`],
+          ...(v('c_bt49')?[['Code BT-49',v('c_bt49')]]:[]),['Contact',contactVal||'-'],['Téléphone',v('c_phone')||'-'],['Email',emailClient||'-'],
+          ...(v('c_notes')?[['Notes',v('c_notes')]]:[])],
+  sections: sections.map(s=>({titre:s.titre, items:s.items})),
+  plv: plvSel,
+  totaux,
+  mention: mentionDoc,
+  commercial: emailCommercial
+};
 
 const btn = this;
 const label = btn.textContent;
 btn.classList.add('disabled');
 btn.textContent = 'Envoi en cours…';
-fetch(MAILER_URL,{
+buildPdfBase64(pdfData).catch(err=>{ console.warn('PDF non généré', err); return null; }).then(pdf64=>{
+  const attachments = pdf64 ? [{name:pdfNom, content:pdf64}] : undefined;
+  const emailBody = buildEmailBody(!!pdf64);
+  const emailHtml = buildEmailHtml(!!pdf64);
+  return fetch(MAILER_URL,{
   method:'POST',
   headers:{'Content-Type':'application/json'},
-  body:JSON.stringify({to:DESTINATAIRE,cc:[emailCommercial,emailClient].filter(Boolean),subject:objet,body:emailBody,html:emailHtml,replyTo:emailClient||undefined})
+  // Mode commercial : la proposition part au magasin, copie au commercial (+ DESTINATAIRE pour traçabilité),
+  // et le magasin répond directement au commercial.
+  body:JSON.stringify(MODE_CS
+    ? {to:emailClient,cc:[...new Set([emailCommercial,DESTINATAIRE])],subject:objet,body:emailBody,html:emailHtml,replyTo:emailCommercial,attachments,
+       accept:{commercial:emailCommercial,dest:DESTINATAIRE,magasin:`${client}${cp?` (${cp})`:''}`,contact:contactVal,titre:CS_LABELS[CS_MODE].titre,...recapCourt}}
+    : {to:emailCommercial,cc:[DESTINATAIRE,emailClient].filter(Boolean),subject:objet,body:emailBody,html:emailHtml,replyTo:emailClient||undefined,attachments})
+  });
 }).then(res=>{
   if(!res.ok)throw new Error('send failed');
   return res.json();
 }).then(data=>{
   if(!data.ok)throw new Error(data.error||'send failed');
   ORDER_SENT = true;
-  alert('Commande envoyée avec succès !');
-  btn.textContent = '✓ Commande envoyée';
+  alert(MODE_CS ? 'Proposition envoyée au magasin avec succès !' : 'Commande envoyée avec succès !');
+  btn.textContent = MODE_CS ? '✓ Proposition envoyée' : '✓ Commande envoyée';
   btn.classList.add('disabled');
   btn.disabled = true;
 }).catch(()=>{
-  alert("Erreur lors de l'envoi de la commande. Merci de réessayer ou de contacter votre commercial.");
+  alert(MODE_CS ? "Erreur lors de l'envoi de la proposition. Merci de réessayer." : "Erreur lors de l'envoi de la commande. Merci de réessayer ou de contacter votre commercial.");
   btn.textContent = label;
   recompute();
 });
 
 });
+
+// ===== PDF (jsPDF 2.5.1 + autotable 3.8.2 + JsBarcode 3.11.6) =====
+// Fichiers hébergés avec la page (dossier lib/) : si la page s'affiche, ils se chargent aussi.
+// Le CDN ne sert que de secours. Chargement lancé dès l'ouverture de la page.
+const PDF_LIBS = [
+  ['lib/jspdf.umd.min.js',              'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',                       ()=>window.jspdf],
+  ['lib/jspdf.plugin.autotable.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js', ()=>window.jspdf?.jsPDF?.API?.autoTable],
+  ['lib/JsBarcode.all.min.js',          'https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js',              ()=>window.JsBarcode],
+];
+function loadScript(src){
+  return new Promise((ok,ko)=>{
+    const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>{ s.remove(); ko(new Error('Chargement impossible : '+src)); };
+    document.head.appendChild(s);
+  });
+}
+let pdfLibsPromise = null;
+function loadPdfLibs(){
+  if(!pdfLibsPromise){
+    pdfLibsPromise = (async()=>{
+      for(const [local,cdn,ready] of PDF_LIBS){
+        if(ready()) continue;
+        try { await loadScript(local); } catch { await loadScript(cdn); }
+      }
+    })().catch(err=>{ pdfLibsPromise = null; throw err; }); // nouvel essai possible au prochain envoi
+  }
+  return pdfLibsPromise;
+}
+window.addEventListener('load', ()=>loadPdfLibs().catch(()=>{}));
+// Les polices standard du PDF ne gèrent ni les emojis ni les espaces fines insécables
+const pdfTxt = s => String(s??'').replace(/[  ]/g,' ').replace(/[^\n\x20-\x7E -ÿ€—–’…•]/g,'').replace(/[ \t]+/g,' ').trim();
+function barcodePng(ean){
+  const c=document.createElement('canvas');
+  JsBarcode(c, ean, {format:'EAN13', height:60, width:2, fontSize:16, margin:4, background:'#ffffff'});
+  return c.toDataURL('image/png');
+}
+async function buildPdfBase64(d){
+  await loadPdfLibs();
+  const doc = new window.jspdf.jsPDF({unit:'mm', format:'a4'});
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 14;
+  const ENCRE=[12,36,52], GRIS=[93,112,128], VERT=[19,138,82], ROUGE=[225,29,46], FOND=[238,243,246];
+
+  // En-tête
+  doc.setFillColor(...ENCRE); doc.rect(0,0,W,24,'F');
+  doc.setTextColor(255); doc.setFont('helvetica','bold'); doc.setFontSize(15);
+  doc.text('HYDRATIS', M, 10);
+  doc.setFontSize(11); doc.text(pdfTxt(d.titre), M, 17.5);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  doc.text(pdfTxt('Date : '+d.date), W-M, 10, {align:'right'});
+  doc.setTextColor(...GRIS); doc.setFontSize(9);
+  doc.text(pdfTxt(d.operation), M, 31, {maxWidth:W-2*M});
+
+  // Client
+  doc.autoTable({startY:35, margin:{left:M,right:M}, theme:'plain',
+    styles:{fontSize:9, cellPadding:1.1, textColor:ENCRE},
+    columnStyles:{0:{fontStyle:'bold', cellWidth:30, textColor:GRIS}},
+    body:d.infos.map(([k,v])=>[pdfTxt(k), pdfTxt(v)])});
+
+  // Produits : une seule remise (37 %) sur ce bon de commande
+  const body = [];
+  const pR = Math.round(REMISE*100);
+  const NB_COL = 7;
+  d.sections.forEach(s=>{
+    body.push([{content:pdfTxt(s.titre), colSpan:NB_COL, styles:{fillColor:FOND, fontStyle:'bold', textColor:ENCRE}}]);
+    if(!s.items.length) body.push([{content:'(aucun)', colSpan:NB_COL, styles:{textColor:GRIS, fontStyle:'italic'}}]);
+    s.items.forEach(it=>{
+      const st = {};  // tout en noir, seul le prix HT net est en vert
+      body.push([
+        {content:pdfTxt(it.name)+(it.sous?'\n'+pdfTxt(it.sous):'')+'\nSKU '+pdfTxt(it.ref), styles:{...st}},
+        {content:String(it.uc), styles:{...st}},
+        {content:it.free?'-':pdfTxt(fmt(it.base)), styles:{...st}},
+        {content:it.free?'OFFERT':`-${pR} %`, styles:{...st}},
+        {content:pdfTxt(fmt(it.nn)), styles:{textColor:VERT, fontStyle:'bold'}},
+        {content:pdfTxt(fmt(it.total)), styles:{fontStyle:'bold', ...st}},
+        {content:'', ean:it.ean, styles:{minCellHeight:17}},
+      ]);
+    });
+  });
+  doc.autoTable({startY:doc.lastAutoTable.finalY+5, margin:{left:M,right:M}, rowPageBreak:'avoid',
+    head:[['Produit','UC','Prix HT / UC',`Remise -${pR} %`,'Prix HT net / UC','Total HT','Gencode']],
+    body,
+    styles:{fontSize:8.5, cellPadding:1.8, valign:'middle', textColor:ENCRE, lineColor:[212,225,233], lineWidth:0.1},
+    headStyles:{fillColor:ENCRE, textColor:255, fontStyle:'bold', halign:'center', fontSize:8},
+    columnStyles:{1:{halign:'center',cellWidth:12},2:{halign:'right',cellWidth:19},3:{halign:'center',cellWidth:22},
+                  4:{halign:'right',cellWidth:21},5:{halign:'right',cellWidth:22},6:{cellWidth:38}},
+    didDrawCell:data=>{
+      const r = data.cell.raw;
+      if(data.section!=='body' || !r || !r.ean) return;
+      const {x,y,width,height} = data.cell;
+      doc.addImage(barcodePng(r.ean), 'PNG', x+(width-32)/2, y+(height-14)/2, 32, 14);
+    }});
+  let y = doc.lastAutoTable.finalY + 4;
+  doc.setFontSize(7.5); doc.setTextColor(...GRIS);
+  doc.text(pdfTxt(`Prix HT net = Prix HT - remise ${pR} %. UC = unité consommateur.`), M, y);
+
+  // PLV
+  if(d.plv.length){
+    doc.autoTable({startY:y+4, margin:{left:M,right:M},
+      head:[['Matériels PLV (gratuits, sous réserve de validation par le responsable de secteur)','Quantité']],
+      body:d.plv.map(p=>[pdfTxt(p.n), String(p.q)]),
+      styles:{fontSize:8.5, cellPadding:1.8, textColor:ENCRE}, headStyles:{fillColor:ENCRE, textColor:255},
+      columnStyles:{1:{halign:'center', cellWidth:24}}});
+    y = doc.lastAutoTable.finalY;
+  }
+
+  // Totaux
+  const last = d.totaux.length-1;
+  doc.autoTable({startY:y+6, margin:{left:W-M-80, right:M}, theme:'plain', rowPageBreak:'avoid',
+    styles:{fontSize:10, cellPadding:1.8, textColor:ENCRE}, columnStyles:{1:{halign:'right'}},
+    body:d.totaux.map(([k,v],i)=> i===last
+      ? [{content:k, styles:{fontStyle:'bold', fillColor:ENCRE, textColor:255}}, {content:pdfTxt(v), styles:{fontStyle:'bold', fillColor:ENCRE, textColor:255, halign:'right'}}]
+      : [k, pdfTxt(v)])});
+  y = doc.lastAutoTable.finalY + 9;
+  if(y > H-22){ doc.addPage(); y = 20; }
+  doc.setFontSize(8.5); doc.setTextColor(...GRIS);
+  doc.text(pdfTxt(d.mention), M, y, {maxWidth:W-2*M});
+  doc.text(pdfTxt(`Franco de port : ${FRANCO_MIN} € HT minimum · Contact commercial : ${d.commercial}`), M, y+5, {maxWidth:W-2*M});
+
+  const n = doc.getNumberOfPages();
+  for(let i=1;i<=n;i++){ doc.setPage(i); doc.setFontSize(7.5); doc.setTextColor(...GRIS); doc.text(`Page ${i}/${n}`, W-M, H-8, {align:'right'}); }
+  return doc.output('datauristring').split(',')[1];
+}
 
 // ===== PLV =====
 const PLV_REFS = ['PLV_COMPTOIR_20TU','PLV_SOL','PLV_STOP_RAYON','PLV_CHEVALET_A5','PLV_SUPPORT_FLYER_A6','PLV_FLYER_A6','PLV_MACA_PEC'];
@@ -1671,7 +1962,10 @@ const PLV_NOMS = {
   'PLV_FLYER_A6':'Lot de 100 flyers A6',
   'PLV_MACA_PEC':'Sticker macaron vitrine'
 };
-function getPlvQty(ref){ return parseInt(document.querySelector(`.plv-qty[data-plv="${ref}"]`)?.value||0)||0; }
+function getPlvQty(ref){
+  const selected = Math.max(0, parseInt(document.querySelector(`.plv-qty[data-plv="${ref}"]`)?.value||0)||0);
+  return selected + (ref === 'PLV_SOL' ? (window.ORDER?.plvSolOffertes || 0) : 0);
+}
 function updatePlvRecap(){
   const wrap=document.getElementById('r_plv_list');
   if(!wrap)return;
