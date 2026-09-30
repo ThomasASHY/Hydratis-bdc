@@ -488,7 +488,7 @@
   .cs-opt.active{border-color:var(--eau);background:var(--eau);color:#fff}
   .cs-note{margin-top:8px;font-size:.72rem;color:var(--eau-fonce);line-height:1.4}
   /* Gratuité ligne par ligne (mode commercial uniquement) */
-  .cs-free{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding:6px 10px;border:1.5px dashed #bce6cf;border-radius:9px;background:#f6fbf8}
+  .cs-free{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;max-width:340px;padding:5px 10px;border:1.5px dashed #bce6cf;border-radius:9px;background:#f6fbf8}
   .cs-free.on{background:var(--vert-bg);border:1.5px solid var(--vert)}
   .cs-free-lbl{font-size:.78rem;font-weight:800;color:var(--vert)}
   .cs-free-lbl small{display:block;font-weight:600;color:var(--gris);font-size:.66rem}
@@ -1410,6 +1410,9 @@ function makeProd(item, type){
   el.querySelector('.prod-top input').addEventListener('input',e=>{
     let v=Math.max(0,parseInt(e.target.value)||0);updateQty(ref,v,el);
   });
+  // Ligne « 🎁 Gratuit » compacte, rangée sous les badges prix (comme sur Andros)
+  const freeRow = el.querySelector('.cs-free');
+  if(freeRow) el.querySelector('.prod-info').appendChild(freeRow);
   bindFreeRow(el, ref, ()=>updateQty(ref, state[ref]||0, el));
   el.querySelector('.prod-toggle-bar').addEventListener('click',()=>{
     el.classList.toggle('open');
@@ -2128,7 +2131,7 @@ function updateFlasque(){
 (function initFlasque(){
   const input = document.getElementById('fl-qty');
   const flCard = document.getElementById('flasque-card');
-  flCard.querySelector('.prod-top').insertAdjacentHTML('afterend', freeRowHtml('FLAS_ACCROCHE_500','en lots de 10'));
+  flCard.querySelector('.prod-info').insertAdjacentHTML('beforeend', freeRowHtml('FLAS_ACCROCHE_500','en lots de 10'));
   bindFreeRow(flCard, 'FLAS_ACCROCHE_500', recompute);
   document.getElementById('fl-minus').addEventListener('click',()=>{
     flasqueLots = Math.max(0, flasqueLots-1); input.value = flasqueLots; recompute();
