@@ -1399,15 +1399,15 @@ function makeProd(item, type){
         <span class="dl">Coeff</span><span class="dv tier-coeff-val">${coeff(nn,pmc).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
       </div>
     </div>`;
-  el.querySelectorAll('.prod-top .qty button').forEach(b=>{
+  el.querySelectorAll('.prod-top > .qty button').forEach(b=>{
     b.addEventListener('click',()=>{
-      const inp=el.querySelector('.prod-top input');
+      const inp=el.querySelector('.prod-top > .qty input');
       let v=parseInt(inp.value)||0;
       v = b.dataset.act==='plus'?v+1:Math.max(0,v-1);
       inp.value=v;updateQty(ref,v,el);
     });
   });
-  el.querySelector('.prod-top input').addEventListener('input',e=>{
+  el.querySelector('.prod-top > .qty input').addEventListener('input',e=>{
     let v=Math.max(0,parseInt(e.target.value)||0);updateQty(ref,v,el);
   });
   // Ligne « 🎁 Gratuit » compacte, rangée sous les badges prix (comme sur Andros)
