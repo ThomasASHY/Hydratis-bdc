@@ -213,6 +213,14 @@
   .plv-lien{float:right;font-size:.72rem;font-weight:600}
   .plv-lien a{color:var(--eau);text-decoration:none}
   .plv-lien a:hover{text-decoration:underline}
+  /* Question « PLV de sol offerte » posée au magasin à l'envoi de sa commande */
+  .plvop-dlg{border:0;border-radius:14px;padding:20px 18px;margin:auto;max-width:420px;width:calc(100% - 32px);color:var(--encre);box-shadow:0 12px 40px rgba(12,36,52,.3)}
+  .plvop-dlg::backdrop{background:rgba(12,36,52,.55)}
+  .plvop-dlg h3{font-size:1.05rem;margin-bottom:10px}
+  .plvop-dlg p{font-size:.9rem;margin-bottom:8px}
+  .plvop-btns{display:flex;gap:10px;margin-top:16px}
+  .plvop-btns button{flex:1;padding:12px 8px;border-radius:10px;border:1.5px solid var(--ligne);background:var(--blanc);color:var(--encre);font:inherit;font-weight:800;cursor:pointer}
+  .plvop-btns button.oui{background:var(--vert);border-color:var(--vert);color:#fff}
   .gift-tiers{margin-top:9px;display:flex;flex-direction:column;gap:5px}
   .gift-grid{margin-top:10px;font-variant-numeric:tabular-nums}
   .gift-grid .gg-head{
@@ -1615,7 +1623,9 @@ function recompute(){
   if(plvSolNote){
     if(PROMO_PERIOD==='octobre'){
       plvSolNote.textContent = plvSolOffertes > 0
-        ? `✅ ${plvSolOffertes} PLV de sol offerte, incluse automatiquement dans la commande. La quantité saisie ci-dessous s'ajoute à cette dotation.`
+        ? (MODE_CS
+            ? `✅ ${plvSolOffertes} PLV de sol offerte avec l'opération : le magasin choisira de la recevoir ou non au moment de valider la proposition. La quantité saisie ci-dessous s'y ajoute.`
+            : `✅ ${plvSolOffertes} PLV de sol offerte avec l'opération : nous vous demanderons à l'envoi de la commande si vous souhaitez la recevoir. La quantité saisie ci-dessous s'y ajoute.`)
         : '1 PLV de sol offerte dès 9 packs livrés (72 tubes), gratuités incluses.';
     } else {
       plvSolNote.textContent = "⚠️ Sous réserve d'avoir déjà commandé au minimum 144 tubes";
@@ -1768,6 +1778,13 @@ document.getElementById('bb_btn').addEventListener('click',function(){
     document.getElementById('c_email').focus();
     return;
   }
+  // Magasin : PLV de sol offerte(s) par l'opération → on demande s'il souhaite la recevoir, puis l'envoi reprend
+  const plvOpRep = plvOpChoix; plvOpChoix = null;
+  if(!MODE_CS && o.plvSolOffertes>0 && plvOpRep===null){
+    const btnEnvoi = this;
+    askPlvOp(o.plvSolOffertes, rep=>{ plvOpChoix = rep; btnEnvoi.click(); });
+    return;
+  }
   // Mode commercial : gratuits de l'opération pas (ou pas tous) sélectionnés
   if(MODE_CS && o.free > o.freeCs8 &&
      !confirm(csOpMessage(o.totalDisplaysCmd, o.free, o.freeCs8).txt+"\n\nEnvoyer quand même la proposition sans ces gratuits ?")) return;
@@ -1853,7 +1870,17 @@ ${v('c_notes')?`  Notes : ${v('c_notes')}\n`:''}`;
     ...(itemsFlasques.length ? [{titre:'🧃 FLASQUES (offre PCB de 10)', items:itemsFlasques}] : []),
   ];
   const allItems = sections.flatMap(s=>s.items);
-  const plvSel = PLV_REFS.map(r=>({n:PLV_NOMS[r], q:getPlvQty(r)})).filter(x=>x.q>0);
+  // PLV de sol offerte(s) par l'opération : ajoutée(s) pour la quantité choisie par le magasin (0 = aucune)
+  const plvOpQte = Math.min(plvOpRep||0, o.plvSolOffertes);
+  const plvSel = PLV_REFS.map(r=>({n:PLV_NOMS[r], q:getPlvQty(r)+(r==='PLV_SOL' ? plvOpQte : 0)})).filter(x=>x.q>0);
+  // Mode commercial : la question est posée au magasin sur la page de validation de la proposition (worker mailer)
+  const plvOp = MODE_CS && o.plvSolOffertes>0 ? {n:'PLV de sol offerte (Opération Gratuité)', q:o.plvSolOffertes} : null;
+  const plvNote = plvOp
+    ? `${plvOp.q} PLV de sol offerte${plvOp.q>1?'s':''} avec l'opération : vous indiquerez si vous souhaitez ${plvOp.q>1?'les':'la'} recevoir au moment de valider la proposition.`
+    : (!MODE_CS && plvOpQte<o.plvSolOffertes
+        ? (plvOpQte>0 ? `PLV de sol offerte par l'opération : ${plvOpQte} sur ${o.plvSolOffertes} souhaitée par le magasin.`
+                      : "PLV de sol offerte par l'opération : non souhaitée par le magasin.")
+        : '');
   const totaux = [['Total HT',fmt(o.totalHT)],['TVA 5,5 %',fmt(o.tva55)],['TVA 20 %',fmt(o.tva20)],['Total TTC',fmt(o.ttc)]];
   const mentionDoc = MODE_CS
     ? "Proforma établie par votre commercial Hydratis. Ce document n'a pas valeur de commande."
@@ -1878,6 +1905,7 @@ ${v('c_notes')?`  Notes : ${v('c_notes')}\n`:''}`;
     ]),
     '📢 MATÉRIELS PLV (gratuits)',
     ...(plvSel.length ? plvSel.map(p=>`  • ${p.n} : ${p.q}`) : ['  (aucun)']),
+    ...(plvNote ? [`  ${plvNote}`] : []),
     '',
     SEP,
     ...totaux.map(([k,val])=>`${k} : ${val}`),
@@ -1912,6 +1940,7 @@ ${v('c_notes')?`  Notes : ${v('c_notes')}\n`:''}`;
     (plvSel.length
       ? plvSel.map(p=>`<tr><td style="${TD}">${escHtml(p.n)}</td><td style="${TD}text-align:center">${p.q}</td><td colspan="${NCOL-2}" style="${TD}"></td></tr>`).join('')
       : `<tr><td colspan="${NCOL}" style="${TD}color:#5d7080">(aucun)</td></tr>`)+
+    (plvNote ? `<tr><td colspan="${NCOL}" style="${TD}font-weight:700;font-size:13px">${escHtml(plvNote)}</td></tr>` : '')+
     totaux.map(([k,val],i)=>{
       const st = (i===totaux.length-1 ? 'background:#0c2434;color:#fff;font-weight:800;' : 'font-weight:700;')+(i===0?'border-top:3px solid #0c2434;padding-top:12px;':'');  // trait épais avant les totaux
       return `<tr><td colspan="${NCOL-1}" style="${TD}${st}text-align:right">${k}</td><td style="${TD}${st}text-align:right;white-space:nowrap">${val}</td></tr>`;
@@ -1941,6 +1970,12 @@ if(!MODE_CS){
   outro='\n\nCette proposition n\'a pas valeur de commande.\nPour la valider, cliquez sur le bouton « Je valide la proposition ». Pour modifier les quantités, répondez simplement à cet e-mail.\n\nBien cordialement,\nVotre commercial Hydratis\n'+emailCommercial+'\n';
 }
 
+// Adresses des bons de commande en ligne, rappelées en bas de chaque mail (Hydratis + Andros Sport)
+const SITES_BTOB = [['Hydratis','https://hydratis-bdc.pages.dev'],['Andros Sport','https://andros-sport.pages.dev']];
+const sitesTxt = '\nVos bons de commande en ligne :\n'+SITES_BTOB.map(([n,u])=>`  • ${n} : ${u}`).join('\n')+'\n';
+const sitesHtml = '<p style="font-family:Segoe UI,Arial,sans-serif;font-size:14px;color:#0c2434;margin:14px 0 0"><strong>Vos bons de commande en ligne :</strong><br>'+
+  SITES_BTOB.map(([n,u])=>`${n} : <a href="${u}" target="_blank" style="color:#0673a3">${u}</a>`).join('<br>')+'</p>';
+
 // Mode commercial : bouton « Je valide la proposition ». {{ACCEPT_URL}} est remplacé par le worker
 // mailer par un lien signé qui renvoie la validation au commercial (client en copie).
 const acceptBtnHtml =
@@ -1956,11 +1991,11 @@ const buildEmailBody = avecPdf =>
   intro + enteteTxt + '\n' + recapTxt +
   (avecPdf ? '\n\n'+pjLigne : '') +
   (MODE_CS ? '\n\n👉 Valider la proposition en un clic : {{ACCEPT_URL}}' : '') +
-  outro;
+  outro + sitesTxt;
 const buildEmailHtml = avecPdf => {
   let h = preHtml(intro) + preHtml(enteteTxt) + recapHtml +
     (avecPdf ? `<p style="font-family:Segoe UI,Arial,sans-serif;font-size:14px;font-weight:700;color:#0673a3;background:#e3f5fc;border-radius:8px;padding:10px 12px;margin:14px 0 0;max-width:616px">${escHtml(pjLigne)}</p>` : '') +
-    (MODE_CS ? acceptBtnHtml+preHtml(outro.replace(/^\n+/,'')) : preHtml(outro));
+    (MODE_CS ? acceptBtnHtml+preHtml(outro.replace(/^\n+/,'')) : preHtml(outro)) + sitesHtml;
   if(bt49Val) h = h.replace('Code BT-49 : '+escHtml(bt49Val),'<strong style="color:#e11d2e">Code BT-49 : '+escHtml(bt49Val)+'</strong>');
   return h;
 };
@@ -1971,6 +2006,7 @@ const recapCourt = {
     pb: it.free?'-':fmt(it.base), rms: REMISES_AFF.map(([,r])=>it.free?'OFFERT':remPct(r))}))]),
   remises: remLbls,
   plv: plvSel,
+  ...(plvOp ? {plvOp} : {}),
   totaux
 };
 
@@ -2157,9 +2193,31 @@ const PLV_NOMS = {
   'PLV_FLYER_A6':'Lot de 100 flyers A6',
   'PLV_MACA_PEC':'Sticker macaron vitrine'
 };
+// Quantité saisie à la main. La PLV de sol offerte par l'opération n'est plus ajoutée d'office :
+// le magasin dit s'il la souhaite à l'envoi de sa commande (askPlvOp) ou en validant la proposition (mode commercial).
 function getPlvQty(ref){
-  const selected = Math.max(0, parseInt(document.querySelector(`.plv-qty[data-plv="${ref}"]`)?.value||0)||0);
-  return selected + (ref === 'PLV_SOL' ? (window.ORDER?.plvSolOffertes || 0) : 0);
+  return Math.max(0, parseInt(document.querySelector(`.plv-qty[data-plv="${ref}"]`)?.value||0)||0);
+}
+let plvOpChoix = null;  // réponse du magasin à askPlvOp : null = pas encore posée, sinon quantité souhaitée (0 = aucune)
+function askPlvOp(n, done){
+  const d = document.createElement('dialog');
+  d.className = 'plvop-dlg';
+  // Un bouton par quantité possible : « Non merci / Oui » pour 1 offerte, « Aucune / 1 seulement / Les 2 » pour 2
+  const lbl = q => q===0 ? (n>1?'Aucune':'Non merci') : n===1 ? 'Oui' : q===n ? `Les ${n}` : `${q} seulement`;
+  d.innerHTML =
+    '<h3>PLV de sol offerte</h3>'+
+    `<p>Avec l'Opération Gratuité, votre commande vous donne droit à <b>${n} PLV de sol offerte${n>1?'s':''}</b>.</p>`+
+    `<p>${n>1?'Combien souhaitez-vous en recevoir':'Souhaitez-vous la recevoir'} avec votre commande ?</p>`+
+    '<div class="plvop-btns">'+Array.from({length:n+1},(_,q)=>`<button type="button" data-rep="${q}"${q===n?' class="oui"':''}>${lbl(q)}</button>`).join('')+'</div>';
+  d.addEventListener('click', e=>{
+    const rep = e.target.closest('[data-rep]')?.dataset.rep;
+    if(rep===undefined) return;
+    d.close();
+    done(parseInt(rep));
+  });
+  d.addEventListener('close', ()=>d.remove());  // fermé sans réponse (Échap) : rien n'est envoyé
+  document.body.appendChild(d);
+  d.showModal();
 }
 function updatePlvRecap(){
   const wrap=document.getElementById('r_plv_list');
@@ -2168,6 +2226,8 @@ function updatePlvRecap(){
     const q=getPlvQty(r);
     return q>0?`<div class="rline"><span class="rl-lbl">${PLV_NOMS[r]}</span><span class="rl-val">${q}</span></div>`:null;
   }).filter(Boolean);
+  const op = window.ORDER?.plvSolOffertes || 0;
+  if(op>0) lines.push(`<div class="rline"><span class="rl-lbl">PLV de sol offerte (opération)</span><span class="rl-val">${op} · ${MODE_CS?'au choix du magasin':'à confirmer à l\'envoi'}</span></div>`);
   wrap.innerHTML=lines.length?lines.join(''):'<div class="rline"><span class="rl-lbl" style="color:var(--gris);font-style:italic;">Aucun matériel sélectionné</span></div>';
 }
 document.querySelectorAll('[data-plv]').forEach(el=>{
