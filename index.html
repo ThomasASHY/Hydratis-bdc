@@ -181,10 +181,6 @@
   .pre-titre{margin:16px 12px 0;display:flex;flex-direction:column;gap:2px}
   .pre-titre b{font-size:1.05rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--encre)}
   .pre-titre span{font-size:.82rem;color:var(--gris)}
-  /* Version Classic : sans sucres seul (le duo sera ajouté plus tard) */
-  #pre-card-duo{display:none!important}
-  .pre-wrap{grid-template-columns:1fr!important}
-  .pre-wrap #pre-card-ss .pre-banner{aspect-ratio:1600/400!important;object-fit:fill!important;content:url(Images/PRECO_SS_LARGE.webp)!important;cursor:pointer}
   #pre-cta-ss{--cta:#7bb8d3}#pre-cta-duo{--cta:#feb002}
   #pre-cta-duo,#pre-cta-ss,#pre-cta-duo.open,#pre-cta-ss.open{display:none!important;width:calc(100% - 36px)!important;max-width:none!important;min-width:0!important;margin:10px 18px 12px!important;border-radius:999px!important;border:3px solid #fff!important;box-shadow:0 0 0 2.5px var(--cta)!important;padding:7px 14px!important;font-size:.82rem!important;font-weight:800!important;text-transform:uppercase;letter-spacing:.03em;background:var(--cta)!important;color:#fff!important}
   .pre-cta.open .pre-n,.pre-cta .pre-n,#pre-cta-duo.open .pre-n,#pre-cta-ss.open .pre-n{background:#fff!important;color:#0c2434!important}
@@ -804,7 +800,7 @@
 </div>
 
 <!-- PRÉCO 2027 (en tête) -->
-<div class="pre-chips-t">Accès rapide aux rubriques</div><nav class="pre-chips" id="preChips" aria-label="Raccourcis"><a href="#pre-card-ss" data-to="pre-card-ss">Préco sans sucre</a><a href="#sec-gamme" data-to="gamme">Gamme 2026</a><a href="#sec-plv" data-to="sec-plv">PLV</a></nav>
+<div class="pre-chips-t">Accès rapide aux rubriques</div><nav class="pre-chips" id="preChips" aria-label="Raccourcis"><a href="#pre-card-duo" data-to="pre-card-duo">Préco duo</a><a href="#pre-card-ss" data-to="pre-card-ss">Préco sans sucre</a><a href="#sec-gamme" data-to="gamme">Gamme 2026</a><a href="#sec-plv" data-to="sec-plv">PLV</a></nav>
 <div class="pre-titre"><b>Précommandes 2027</b><span>Touchez un visuel pour voir les offres</span></div>
 <div class="pre-wrap">
   <div class="pre-card" id="pre-card-duo">
@@ -2662,6 +2658,19 @@ document.getElementById('bb_btn').addEventListener('click',async function(){
     plvPreReps.push(plvPre);
     plvReps.push(plvRep);
   }
+  // Client : aucune préco 2027 dans la commande → on lui propose d'y jeter un œil avant d'envoyer
+  if(!MODE_CS && STORES.every((_,i)=>{ if(multi) showStore(i); const q=window.ORDER.pre; return !(q.nd>0||q.ns>0); })){
+    if(multi) showStore(retour);
+    const _go = await new Promise(done=>{
+      const d=document.createElement('dialog'); d.className='plvop-dlg';
+      d.innerHTML='<h3>📦 Avez-vous pensé à la précommande 2027 ?</h3><p>Votre commande ne comprend ni Préco Duo ni Préco sans sucre. Les précommandes bénéficient de remises par paliers et d\'une livraison dès janvier (sans sucre) ou mars (Duo).</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button type="button" data-r="voir" style="flex:1;min-width:150px;padding:11px;border-radius:10px;border:0;background:#0673a3;color:#fff;font:inherit;font-weight:800;cursor:pointer">Voir les précommandes</button><button type="button" data-r="non" style="flex:1;min-width:150px;padding:11px;border-radius:10px;border:2px solid #0673a3;background:#fff;color:#0673a3;font:inherit;font-weight:800;cursor:pointer">Envoyer sans précommande</button></div>';
+      document.body.appendChild(d);
+      d.addEventListener('click',e=>{ const r=e.target.dataset&&e.target.dataset.r; if(r){ d.close(); d.remove(); done(r); } });
+      d.addEventListener('cancel',e=>{ e.preventDefault(); d.close(); d.remove(); done('voir'); });
+      d.showModal();
+    });
+    if(_go==='voir'){ const w=document.querySelector('.pre-wrap'); if(w) w.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+  }
   const docs = [];
   for(let i=0;i<nb;i++){
     if(multi) showStore(i);
@@ -2684,7 +2693,11 @@ document.getElementById('bb_btn').addEventListener('click',async function(){
   const objet = (MODE_CS ? `${CS_LABELS[CS_MODE].titre} Hydratis` : 'Commande Hydratis BtoB')+
     ` — ${multi ? lieux : d0.magLbl} — ${dateJour}`+(aPreco ? ' (dont précommande 2027)' : '');
   const precoNoms = [...new Set(docs.filter(d=>d.preco).map(d=>d.preco==='duo'?'Préco Duo':'Préco sans sucre'))].join(' et ');
-  const precoPhrase = aPreco ? `\n\n📦 Cette ${MODE_CS&&!CONF()?'proposition':'commande'} comprend une précommande 2027 (${precoNoms}) : elle est traitée à part, hors offre octobre / novembre, avec un bon de commande PDF distinct par préco.` : '';
+  const _hasDuo = docs.some(d=>d.preco==='duo'), _hasSs = docs.some(d=>d.preco==='ss');
+  const _pc = MODE_CS&&!CONF()?'proposition':'commande';
+  const precoPhrase = aPreco ? (_hasDuo&&_hasSs
+    ? `\n\n📦 Cette ${_pc} comprend deux précommandes 2027 : une Préco Duo et une Préco sans sucre. Elles sont traitées à part, hors offre octobre / novembre, avec un bon de commande PDF distinct par préco.`
+    : `\n\n📦 Cette ${_pc} comprend une précommande 2027 : ${_hasDuo?'Préco Duo':'Préco sans sucre'}. Elle est traitée à part, hors offre octobre / novembre, avec son propre bon de commande PDF.`) : '';
 
   const signature = `\n\nBien cordialement,\n${commerciaux.length>1?'Vos commerciaux':'Votre commercial'} Hydratis\n${commerciaux.join(', ')}\n`;
   let intro, outro;
