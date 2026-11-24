@@ -2749,8 +2749,8 @@ document.getElementById('bb_btn').addEventListener('click',async function(){
     if(pc.ns>0) docs.push(buildStoreDoc(plvReps[i], pos, 'ss', plvPreReps[i]));
   }
   if(multi) showStore(retour);
-  docs.forEach((d,k)=>{ d.gi = k; });
-  // Envoi par lots : un e-mail par lot de 20 commandes. Après un échec, un nouveau clic ne renvoie que les lots restants.
+  docs.forEach((d,k)=>{ d.gi = k; }); window.LOTS_TOTAL = docs.length;
+  // Envoi par lots : un e-mail par lot de 12 commandes. Après un échec, un nouveau clic ne renvoie que les lots restants.
   const sig = docs.map(d=>d.pdfNom+'|'+d.o.totalHT).join(';');
   const lotsTous = splitLots(docs);
   const dejaEnvoyes = (window.LOTS_SIG===sig && window.LOTS_OK<lotsTous.length) ? window.LOTS_OK : 0;
@@ -2813,9 +2813,9 @@ document.getElementById('bb_btn').addEventListener('click',async function(){
   }
 
   if(lotN>1){
-    const rest = lotN-lotI-1, plage = multiOut ? ` (magasins ${Math.min(...docs.map(d=>d.storeN))} à ${Math.max(...docs.map(d=>d.storeN))} sur ${nbTot})` : '';
-    intro += `📦 Lot ${lotI+1} sur ${lotN}${plage} : votre envoi est réparti en ${lotN} e-mails (${ORDERS_MAX} commandes maximum par e-mail). `+
-      (rest>0 ? `${rest} autre${rest>1?'s lots arrivent':' lot arrive'} dans ${rest>1?'des e-mails séparés':'un e-mail séparé'}.` : `C'est le dernier lot : votre envoi est complet.`)+'\n\n';
+    const rest = lotN-lotI-1, g0 = Math.min(...docs.map(d=>d.gi))+1, g1 = Math.max(...docs.map(d=>d.gi))+1, tot = window.LOTS_TOTAL||g1, apres = tot-g1;
+    intro += `📦 Voici les commandes ${g0} à ${g1} sur ${tot} : votre envoi est réparti en ${lotN} e-mails de validation (${ORDERS_MAX} commandes maximum par e-mail). `+
+      (rest>0 ? `Les ${apres} suivante${apres>1?'s':''} arrive${apres>1?'nt':''} dans ${rest>1?rest+' autres e-mails':'un autre e-mail'}.` : `C'est le dernier e-mail : votre envoi est complet.`)+'\n\n';
   }
 
   const SITES_BTOB = [['Hydratis','https://hydratis-bdc.pages.dev'],['Andros Sport','https://andros-sport.pages.dev']];
@@ -3281,8 +3281,8 @@ function showStore(i){
   STORE_CUR = i;
   loadStore(STORES[i]);
 }
-// Un envoi est découpé en lots de 20 commandes maximum (un e-mail par lot) : on ne coupe jamais un magasin en deux.
-const ORDERS_MAX = 20;
+// Un envoi est découpé en lots de 12 commandes maximum (un e-mail par lot) : on ne coupe jamais un magasin en deux.
+const ORDERS_MAX = 12;
 function splitLots(docs){
   const lots=[[]]; let i=0;
   while(i<docs.length){
