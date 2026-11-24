@@ -181,10 +181,6 @@
   .pre-titre{margin:16px 12px 0;display:flex;flex-direction:column;gap:2px}
   .pre-titre b{font-size:1.05rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--encre)}
   .pre-titre span{font-size:.82rem;color:var(--gris)}
-  /* Version Classic : sans sucres seul (le duo sera ajouté plus tard) */
-  #pre-card-duo{display:none!important}
-  .pre-wrap{grid-template-columns:1fr!important}
-  .pre-wrap #pre-card-ss .pre-banner{aspect-ratio:1600/400!important;object-fit:fill!important;content:url(Images/PRECO_SS_LARGE.webp)!important;cursor:pointer}
   #pre-cta-ss{--cta:#7bb8d3}#pre-cta-duo{--cta:#feb002}
   #pre-cta-duo,#pre-cta-ss,#pre-cta-duo.open,#pre-cta-ss.open{display:none!important;width:calc(100% - 36px)!important;max-width:none!important;min-width:0!important;margin:10px 18px 12px!important;border-radius:999px!important;border:3px solid #fff!important;box-shadow:0 0 0 2.5px var(--cta)!important;padding:7px 14px!important;font-size:.82rem!important;font-weight:800!important;text-transform:uppercase;letter-spacing:.03em;background:var(--cta)!important;color:#fff!important}
   .pre-cta.open .pre-n,.pre-cta .pre-n,#pre-cta-duo.open .pre-n,#pre-cta-ss.open .pre-n{background:#fff!important;color:#0c2434!important}
@@ -805,7 +801,7 @@
 </div>
 
 <!-- PRÉCO 2027 (en tête) -->
-<div class="pre-chips-t">Accès rapide aux rubriques</div><nav class="pre-chips" id="preChips" aria-label="Raccourcis"><a href="#pre-card-ss" data-to="pre-card-ss">Préco sans sucre</a><a href="#sec-gamme" data-to="gamme">Gamme 2026</a><a href="#sec-plv" data-to="sec-plv">PLV</a></nav>
+<div class="pre-chips-t">Accès rapide aux rubriques</div><nav class="pre-chips" id="preChips" aria-label="Raccourcis"><a href="#pre-card-duo" data-to="pre-card-duo">Préco duo</a><a href="#pre-card-ss" data-to="pre-card-ss">Préco sans sucre</a><a href="#sec-gamme" data-to="gamme">Gamme 2026</a><a href="#sec-plv" data-to="sec-plv">PLV</a></nav>
 <div class="pre-titre"><b>Précommandes 2027</b><span>Touchez un visuel pour voir les offres</span></div>
 <div class="pre-wrap">
   <div class="pre-card" id="pre-card-duo">
@@ -1446,9 +1442,9 @@ function commandesPayload(docs){
     const noms=(typeof PLV_NOMS!=='undefined')?PLV_NOMS:{};
     const plv=(pd.plv||[]).map(p=>({ref:Object.keys(noms).find(k=>noms[k]===p.n)||'', nom:p.n, q:p.q}));
     return {
-      cid:ORDER_CID+'-'+i,
+      cid:ORDER_CID+'-'+(d.gi!=null?d.gi:i),
       edit:d.editCode||'',
-      remplace:(i===0&&window.REMPLACE)?window.REMPLACE:'',
+      remplace:((d.gi!=null?d.gi:i)===0&&window.REMPLACE)?window.REMPLACE:'',
       pdfBon: (window.CS_BONS&&window.CS_BONS[i]) ? window.CS_BONS[i].pdf : undefined,
       pdfBonNom: (window.CS_BONS&&window.CS_BONS[i]) ? window.CS_BONS[i].nom : undefined,
       message: !MODE_CS ? '' : (CONF() ? csMsgResolved(new Set(docs.map(x=>x.magLbl)).size>1 ? 'vos '+new Set(docs.map(x=>x.magLbl)).size+' magasins' : 'votre magasin '+(d.magLbl||'')) : (window.CS_MSG_FINAL||'')),
@@ -2727,7 +2723,7 @@ document.getElementById('bb_btn').addEventListener('click',async function(){
     if(multi) showStore(retour);
     const _go = await new Promise(done=>{
       const d=document.createElement('dialog'); d.className='plvop-dlg';
-      d.innerHTML='<h3>📦 Avez-vous pensé à la précommande 2027 ?</h3><p>Votre commande ne comprend pas de Préco sans sucre. La précommande bénéficie de remises par paliers et d\'une livraison dès le 15 janvier 2027.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button type="button" data-r="voir" style="flex:1;min-width:150px;padding:11px;border-radius:10px;border:0;background:#0673a3;color:#fff;font:inherit;font-weight:800;cursor:pointer">Voir les précommandes</button><button type="button" data-r="non" style="flex:1;min-width:150px;padding:11px;border-radius:10px;border:2px solid #0673a3;background:#fff;color:#0673a3;font:inherit;font-weight:800;cursor:pointer">Envoyer sans précommande</button></div>';
+      d.innerHTML='<h3>📦 Avez-vous pensé à la précommande 2027 ?</h3><p>Votre commande ne comprend ni Préco Duo ni Préco sans sucre. Les précommandes bénéficient de remises par paliers et d\'une livraison dès janvier (sans sucre) ou mars (Duo).</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button type="button" data-r="voir" style="flex:1;min-width:150px;padding:11px;border-radius:10px;border:0;background:#0673a3;color:#fff;font:inherit;font-weight:800;cursor:pointer">Voir les précommandes</button><button type="button" data-r="non" style="flex:1;min-width:150px;padding:11px;border-radius:10px;border:2px solid #0673a3;background:#fff;color:#0673a3;font:inherit;font-weight:800;cursor:pointer">Envoyer sans précommande</button></div>';
       document.body.appendChild(d);
       d.addEventListener('click',e=>{ const r=e.target.dataset&&e.target.dataset.r; if(r){ d.close(); d.remove(); done(r); } });
       d.addEventListener('cancel',e=>{ e.preventDefault(); d.close(); d.remove(); done('voir'); });
@@ -2748,17 +2744,35 @@ document.getElementById('bb_btn').addEventListener('click',async function(){
     if(pc.nd>0) docs.push(buildStoreDoc(plvReps[i], pos, 'duo', plvPreReps[i]));
     if(pc.ns>0) docs.push(buildStoreDoc(plvReps[i], pos, 'ss', plvPreReps[i]));
   }
-  const multiDoc = docs.length>1, aPreco = docs.some(d=>d.preco);
   if(multi) showStore(retour);
+  docs.forEach((d,k)=>{ d.gi = k; });
+  // Envoi par lots : un e-mail par lot de 20 commandes. Après un échec, un nouveau clic ne renvoie que les lots restants.
+  const sig = docs.map(d=>d.pdfNom+'|'+d.o.totalHT).join(';');
+  const lotsTous = splitLots(docs);
+  const dejaEnvoyes = (window.LOTS_SIG===sig && window.LOTS_OK<lotsTous.length) ? window.LOTS_OK : 0;
+  window.LOTS_SIG = sig; window.LOTS_OK = dejaEnvoyes;
+  const label = btn.textContent;
+  btn.classList.add('disabled');
+  for(let li=dejaEnvoyes; li<lotsTous.length; li++){
+    btn.textContent = lotsTous.length>1 ? `Envoi du lot ${li+1}/${lotsTous.length}…` : 'Envoi en cours…';
+    const ok = await envoyerLot(lotsTous[li], li, lotsTous.length, nb, multi, label);
+    if(!ok) return;
+    window.LOTS_OK = li+1;
+  }
+  return;
+
+  async function envoyerLot(docs, lotI, lotN, nbTot, multiOut, label){
+  const nb = multiOut ? new Set(docs.map(d=>d.storeN)).size : 1, multi = multiOut && nb>1;
+  const multiDoc = docs.length>1, aPreco = docs.some(d=>d.preco);
 
   const d0 = docs[0], dateJour = d0.dateJour;
   // Un commercial par secteur : le premier est destinataire, tous les autres sont en copie
   const commerciaux = [...new Set(docs.map(d=>d.emailCommercial))];
   const emailCommercial = commerciaux[0];
-  const noms = docs.map(d=>d.nom).join(', ');
+  const noms = [...new Set(docs.map(d=>d.nom))].join(', ');
   const lieux = `${nb} magasins (${noms.length>90 ? noms.slice(0,88)+'…' : noms})`;
   const objet = (MODE_CS ? `${CS_LABELS[CS_MODE].titre} Hydratis` : 'Commande Hydratis BtoB')+
-    ` — ${multi ? lieux : d0.magLbl} — ${dateJour}`+(aPreco ? ' (dont précommande 2027)' : '');
+    ` — ${multi ? lieux : d0.magLbl} — ${dateJour}`+(aPreco ? ' (dont précommande 2027)' : '')+(lotN>1 ? ` — lot ${lotI+1}/${lotN}` : '');
   const precoNoms = [...new Set(docs.filter(d=>d.preco).map(d=>d.preco==='duo'?'Préco Duo':'Préco sans sucre'))].join(' et ');
   const _hasDuo = docs.some(d=>d.preco==='duo'), _hasSs = docs.some(d=>d.preco==='ss');
   const _pc = MODE_CS&&!CONF()?'proposition':'commande';
@@ -2794,6 +2808,12 @@ document.getElementById('bb_btn').addEventListener('click',async function(){
     intro = (csMsgResolved(_lx) ? _m : csGreetLine()+'\n\n'+_m)+'\n\n'; outro = '';
   }
 
+  if(lotN>1){
+    const rest = lotN-lotI-1, plage = multiOut ? ` (magasins ${Math.min(...docs.map(d=>d.storeN))} à ${Math.max(...docs.map(d=>d.storeN))} sur ${nbTot})` : '';
+    intro += `📦 Lot ${lotI+1} sur ${lotN}${plage} : votre envoi est réparti en ${lotN} e-mails (${ORDERS_MAX} commandes maximum par e-mail). `+
+      (rest>0 ? `${rest} autre${rest>1?'s lots arrivent':' lot arrive'} dans ${rest>1?'des e-mails séparés':'un e-mail séparé'}.` : `C'est le dernier lot : votre envoi est complet.`)+'\n\n';
+  }
+
   const SITES_BTOB = [['Hydratis','https://hydratis-bdc.pages.dev'],['Andros Sport','https://andros-sport.pages.dev']];
   const sitesTxt = '\nVos bons de commande en ligne :\n'+SITES_BTOB.map(([n,u])=>`  • ${n} : ${u}`).join('\n')+'\n';
   const sitesHtml = '<p style="font-family:Segoe UI,Arial,sans-serif;font-size:14px;color:#0c2434;margin:14px 0 0"><strong>Vos bons de commande en ligne :</strong><br>'+
@@ -2816,7 +2836,7 @@ document.getElementById('bb_btn').addEventListener('click',async function(){
   // Multi-magasins : contact commun en tête, un bloc par magasin, puis le total général
   const somme = k => round2(docs.reduce((n,d)=>n+d.o[k],0));
   const totauxGen = [['Total HT',fmt(somme('totalHT'))],['TVA 5,5 %',fmt(somme('tva55'))],['TVA 20 %',fmt(somme('tva20'))],['Total TTC',fmt(somme('ttc'))]];
-  const titreMag = (d,i) => d.preco ? `${d.precoTitre} — ${d.magLbl}`+(multi?` (magasin ${d.storeN}/${nb})`:'') : multi ? `MAGASIN ${d.storeN}/${nb} — ${d.magLbl}` : `COMMANDE — ${d.magLbl}`;
+  const titreMag = (d,i) => d.preco ? `${d.precoTitre} — ${d.magLbl}`+(multi?` (magasin ${d.storeN}/${nbTot})`:'') : multi ? `MAGASIN ${d.storeN}/${nbTot} — ${d.magLbl}` : `COMMANDE — ${d.magLbl}`;
   const lblDoc = d => d.magLblDoc;
   const corpsTxt = !multiDoc ? d0.enteteTxt + '\n' + d0.recapTxt :
     `${d0.docTitre}\n${d0.opLigne}\n\nCONTACT\n${d0.contactTxt}\n`+
@@ -2892,13 +2912,10 @@ document.getElementById('bb_btn').addEventListener('click',async function(){
   };
   const buildEmailBody_prop = propBody, buildEmailHtml_prop = propHtml;
 
-  const pjJoint = multi ? ('Proposition_'+CS_LABELS[CS_MODE].court+'_'+nb+'_magasins_'+dateJour).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\-]+/g,'_')+'.pdf' : d0.pdfNom;
+  const pjJoint = multi ? ('Proposition_'+CS_LABELS[CS_MODE].court+'_'+nb+'_magasins_'+dateJour+(lotN>1?'_lot'+(lotI+1):'')).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\-]+/g,'_')+'.pdf' : d0.pdfNom;
   const buildEmailBody = avecPdf => PROP ? buildEmailBody_prop(avecPdf, pjJoint) : buildEmailBody_orig(avecPdf);
   const buildEmailHtml = avecPdf => PROP ? buildEmailHtml_prop(avecPdf, pjJoint) : buildEmailHtml_orig(avecPdf);
 
-  const label = btn.textContent;
-  btn.classList.add('disabled');
-  btn.textContent = 'Envoi en cours…';
   try{
     // Un PDF par magasin, générés l'un après l'autre
     const attachments = [];
@@ -2939,15 +2956,19 @@ document.getElementById('bb_btn').addEventListener('click',async function(){
     if(!res.ok)throw new Error('send failed');
     const data = await res.json();
     if(!data.ok)throw new Error(data.error||'send failed');
+    if(lotI<lotN-1) return true;
     ORDER_SENT = true;
-    alert(CONF() ? 'Commande enregistrée : le client reçoit son bon de commande par e-mail.' : MODE_CS ? 'Proposition envoyée au magasin avec succès !' : (multi ? 'Commandes envoyées avec succès !' : 'Commande envoyée avec succès !'));
-    btn.textContent = CONF() ? '✓ Commande enregistrée' : MODE_CS ? '✓ Proposition envoyée' : (multi ? '✓ Commandes envoyées' : '✓ Commande envoyée');
+    alert((lotN>1 ? `Envoi terminé : ${lotN} e-mails (un par lot de ${ORDERS_MAX} commandes maximum). ` : '') + (CONF() ? 'Commande enregistrée : le client reçoit son bon de commande par e-mail.' : MODE_CS ? 'Proposition envoyée au magasin avec succès !' : (multiOut ? 'Commandes envoyées avec succès !' : 'Commande envoyée avec succès !')));
+    btn.textContent = CONF() ? '✓ Commande enregistrée' : MODE_CS ? '✓ Proposition envoyée' : (multiOut ? '✓ Commandes envoyées' : '✓ Commande envoyée');
     btn.classList.add('disabled');
     btn.disabled = true;
+    return true;
   }catch{
-    alert(MODE_CS&&!CONF() ? "Erreur lors de l'envoi de la proposition. Merci de réessayer." : "Erreur lors de l'envoi de la commande. Merci de réessayer ou de contacter votre commercial.");
+    alert((lotN>1 ? `Le lot ${lotI+1} sur ${lotN} n'a pas pu partir (${lotI} lot${lotI>1?'s':''} déjà envoyé${lotI>1?'s':''}). Cliquez de nouveau sur le bouton : seuls les lots restants seront renvoyés.\n\n` : '') + (MODE_CS&&!CONF() ? "Erreur lors de l'envoi de la proposition. Merci de réessayer." : "Erreur lors de l'envoi de la commande. Merci de réessayer ou de contacter votre commercial."));
     btn.textContent = label;
     recompute();
+    return false;
+  }
   }
 });
 
@@ -3209,7 +3230,7 @@ function updateFlasque(){
 // Le formulaire affiche toujours le magasin courant (STORE_CUR) ; les autres onglets sont rangés dans STORES.
 // Contact, téléphone et e-mail sont communs ; nom du magasin, code postal, ville, BT-49, notes, panier et PLV sont propres
 // à chaque onglet, tout comme les paliers de l'opération, le franco et les offerts (calculés par recompute() sur l'onglet affiché).
-const MULTI_MAX = 12;
+const MULTI_MAX = 60;
 let MULTI = false, STORE_CUR = 0;
 const STORES = [null];  // STORES[STORE_CUR] n'est à jour qu'au moment où l'on quitte l'onglet (snapStore)
 const MAG_VIDE = {nom:'', cp:'', ville:''};
@@ -3256,9 +3277,21 @@ function showStore(i){
   STORE_CUR = i;
   loadStore(STORES[i]);
 }
+// Un envoi est découpé en lots de 20 commandes maximum (un e-mail par lot) : on ne coupe jamais un magasin en deux.
+const ORDERS_MAX = 20;
+function splitLots(docs){
+  const lots=[[]]; let i=0;
+  while(i<docs.length){
+    let j=i; while(j<docs.length && docs[j].storeN===docs[i].storeN) j++;
+    const g=docs.slice(i,j), cur=lots[lots.length-1];
+    if(cur.length && cur.length+g.length>ORDERS_MAX) lots.push(g); else cur.push(...g);
+    i=j;
+  }
+  return lots;
+}
 // Nouvel onglet : vierge, ou copie du panier affiché (le magasin, le BT-49 et les notes restent à saisir)
 function addStore(dupliquer){
-  if(STORES.length>=MULTI_MAX){ alert(`Vous pouvez regrouper jusqu'à ${MULTI_MAX} magasins par envoi.`); return; }
+  if(STORES.length>=MULTI_MAX){ alert(`Vous pouvez regrouper jusqu'à ${MULTI_MAX} magasins par envoi (envoyés en plusieurs e-mails de ${ORDERS_MAX} commandes maximum).`); return; }
   STORES[STORE_CUR] = snapStore();
   STORES.push(dupliquer ? {...STORES[STORE_CUR], mag:MAG_VIDE, bt49:'', notes:''} : null);
   STORE_CUR = STORES.length-1;
