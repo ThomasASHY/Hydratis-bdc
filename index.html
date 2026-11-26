@@ -2875,11 +2875,11 @@ document.getElementById('bb_btn').addEventListener('click',async function(){
     intro + corpsTxt +
     (avecPdf ? '\n\n'+pjLigne : '') +
     (MODE_CS&&!CONF() ? '\n\n👉 Valider la proposition en un clic : {{ACCEPT_URL}}' : '') +
-    outro + (CONF()||MODE_CS?'':sitesTxt);
+    outro + (CONF()||MODE_CS?'':signature);
   const buildEmailHtml_orig = avecPdf => {
     const h = preHtml(intro) + corpsHtml +
       (avecPdf ? `<p style="font-family:Segoe UI,Arial,sans-serif;font-size:14px;font-weight:700;color:#0673a3;background:#e3f5fc;border-radius:8px;padding:10px 12px;margin:14px 0 0;max-width:616px">${escHtml(pjLigne)}</p>` : '') +
-      (MODE_CS&&!CONF() ? acceptBtnHtml+preHtml(outro.replace(signature,'').replace(/^\n+/,''))+signatureHtml : preHtml(outro)) + (CONF()||MODE_CS?'':sitesHtml);
+      (MODE_CS&&!CONF() ? acceptBtnHtml+preHtml(outro.replace(signature,'').replace(/^\n+/,''))+signatureHtml : preHtml(outro)) + (CONF()||MODE_CS?'':signatureHtml);
     return multiDoc ? h : bt49Rouge(h, d0.bt49Val);
   };
 
